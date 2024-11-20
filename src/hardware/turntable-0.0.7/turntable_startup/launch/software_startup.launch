@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<launch>
+
+    <include file="$(dirname)/turntable_planning_execution.launch" />
+
+    <include file="$(find turntable_ros_controller)/launch/turntable_ros_controller.launch"/>
+
+</launch>

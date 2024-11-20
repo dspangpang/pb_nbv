@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="turntable" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find turntable_description)/urdf/turntable.urdf.xacro"/>
+    <xacro:include filename="$(find turntable_description)/urdf/turntable_gazebo.xacro" />
+    <link name="map"/>
+    <xacro:turntable_gazebo /> 
+    <xacro:turntable parent="map">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:turntable>
+</robot>

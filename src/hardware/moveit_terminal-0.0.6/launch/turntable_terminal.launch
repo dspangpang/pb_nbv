@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="group_name" default="turntable"/>
+
+    <node pkg="moveit_terminal"
+          type="turntable_terminal_node"
+          name="turntable_terminal_node"
+          output="screen">
+        
+        <param name="group_name" value="$(arg group_name)" type="string" />
+    </node>
+
+</launch>

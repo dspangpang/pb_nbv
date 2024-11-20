@@ -1,0 +1,6 @@
+string pcd_file_path
+geometry_msgs/Pose current_camera_pose
+---
+geometry_msgs/Pose nbv_camera_pose
+bool is_terminated
+int64 result

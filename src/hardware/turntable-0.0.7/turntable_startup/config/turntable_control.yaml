@@ -1,0 +1,5 @@
+turntable_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - turntable_support_joint
+

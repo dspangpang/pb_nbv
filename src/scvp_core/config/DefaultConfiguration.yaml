@@ -1,0 +1,36 @@
+%YAML:1.0
+model_path: "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/"
+nbv_net_path: "/root/work_place/pb_nbv/src/scvp_core/nbv-net"
+sc_net_path: "/root/work_place/pb_nbv/src/scvp_core/sc-net"
+name_of_pcd: hb_models/pcd/obj_000011
+method_of_IG : 0
+octomap_resolution: 0.03
+ground_truth_resolution: 0.01
+num_of_max_iteration: 30
+show: 0
+move_wait : 0
+p_unknown_upper_bound: 0.65
+p_unknown_lower_bound: 0.45
+num_of_views : 800
+cost_weight: 0.5 
+move_cost_on: 0
+move_weight: 0.5
+robot_cost_negtive: 1
+skip_coefficient : 1.0
+num_of_max_flow_node : -1
+interesting_threshold : 0.3
+see_threshold : 0.5
+need_threshold : 0.5
+color_width: 1280
+color_height: 720
+color_fx: 695.9951171875
+color_fy: 695.9951171875
+color_ppx: 640.0
+color_ppy: 360.0
+color_model: 2
+color_k1: 0.
+color_k2: 0.
+color_k3: 0.
+color_p1: 0.
+color_p2: 0.
+depth_scale: 1.0000000474974513e-03

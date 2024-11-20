@@ -1,0 +1,5 @@
+int64 control_mode
+geometry_msgs/Pose pose
+float64[] joint_value
+---
+int64 result

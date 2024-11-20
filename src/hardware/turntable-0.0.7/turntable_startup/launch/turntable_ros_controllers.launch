@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+
+  <rosparam file="$(find turntable_startup)/config/joint_state_controller.yaml" command="load"/>
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" respawn="false" output="screen"/>
+
+
+  <rosparam file="$(find turntable_startup)/config/turntable_control.yaml" command="load"/>
+  <node name="turntable_controller_spawner" pkg="controller_manager" type="controller_manager" args="load turntable_controller" respawn="false" output="screen"/>
+
+</launch>

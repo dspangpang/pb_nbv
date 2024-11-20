@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<robot name="gw_scanner_mount" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find gw_scanner_mount_description)/urdf/gw_scanner_mount.urdf.xacro"/>
+
+    <link name="map"/>
+    <xacro:gw_scanner_mount parent = "map">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:gw_scanner_mount>
+</robot>

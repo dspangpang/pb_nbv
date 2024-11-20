@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<launch>
+    <!-- 启动move_group -->
+    <include file="$(find turntable_moveit_config)/launch/move_group.launch">
+        <!-- 参数 -->
+        <arg name="publish_monitored_planning_scene" value="true"/>
+    </include>
+
+    <!-- 是否启动rviz可视化 moveit -->
+    <include file="$(find turntable_moveit_config)/launch/moveit_rviz.launch">
+        <!-- 参数 -->
+
+        <arg name="rviz_config" value="$(find turntable_moveit_config)/launch/moveit.rviz"/>
+    </include>
+
+</launch>

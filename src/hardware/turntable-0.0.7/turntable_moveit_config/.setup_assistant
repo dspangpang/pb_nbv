@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: turntable_description
+    relative_path: urdf/turntable_standalone.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/turntable.srdf
+  CONFIG:
+    author_name: jzz
+    author_email: jiahzhizhou_bit@163.com
+    generated_timestamp: 1711977067

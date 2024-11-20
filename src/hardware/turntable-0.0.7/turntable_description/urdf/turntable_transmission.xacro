@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:macro name="turntable_transmission">
+
+        <transmission name="turntable_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="turntable_support_joint">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="turntable_motor">
+                <mechanicalReduction>1</mechanicalReduction>
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </actuator>
+        </transmission>
+
+    </xacro:macro>
+
+</robot>

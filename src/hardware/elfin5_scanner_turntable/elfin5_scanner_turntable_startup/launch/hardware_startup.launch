@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<launch>
+
+    <include file="$(dirname)/elfin5_scanner_turntable_bringup.launch" />
+
+    <include file="$(dirname)/elfin_ros_driver.launch" />
+
+</launch>

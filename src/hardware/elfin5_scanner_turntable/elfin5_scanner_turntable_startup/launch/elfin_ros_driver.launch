@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<launch>    
+   
+  <node name="elfin_ros_control" pkg="elfin_ros_control_v3" type="elfin_hardware_interface_v3" output="screen">
+    <rosparam file="$(find elfin5_scanner_turntable_startup)/config/elfin_drivers.yaml" command="load"/>
+  </node>
+  
+</launch>

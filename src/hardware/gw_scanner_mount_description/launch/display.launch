@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+
+<launch>
+  <!-- Parsing xacro and setting robot_description parameter -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find gw_scanner_mount_description)/urdf/gw_scanner_mount_standalone.urdf.xacro'" />
+
+  <!-- Starting Joint state publisher node which will publish the joint values -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
+
+  <!-- Starting robot state publish which will publish tf -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <!-- Launch visualization in rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gw_scanner_mount_description)/urdf.rviz" required="true" />
+</launch>

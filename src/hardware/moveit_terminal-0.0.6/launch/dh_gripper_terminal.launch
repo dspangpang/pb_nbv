@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="group_name" default="dh_gripper"/>
+
+    <node pkg="moveit_terminal"
+          type="dh_girpper_terminal_node"
+          name="dh_girpper_terminal_node"
+          output="screen">
+        
+        <param name="group_name" value="$(arg group_name)" type="string" />
+        <param name="max_distance" value="0.095" type="double" />
+        <param name="liner_weight" value="-6.842105263157895" type="double" />
+        <param name="liner_bias" value="0.65" type="double" />
+    </node>
+
+</launch>

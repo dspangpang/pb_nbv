@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: elfin5_scanner_turntable_description
+    relative_path: urdf/elfin5_scanner_turntable.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/elfin5_scanner_turntable.srdf
+  CONFIG:
+    author_name: jzz
+    author_email: jiazhizhou_bit@163.com
+    generated_timestamp: 1720534123

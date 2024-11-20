@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<!--
+License: Apache 2.0. See LICENSE file in root directory.
+Copyright(c) 2017 PAL Robotics, S.L. All Rights Reserved
+
+This is the Gazebo URDF model for the Intel RealSense D455 camera
+-->
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="gazebo_gw_scanner" params="camera_name reference_link">
+
+    <xacro:property name="deg_to_rad" value="0.01745329251994329577" />
+    <xacro:property name="rate" value="1" />
+    <xacro:property name="PI" value="3.1415926" />
+
+    <link name="kinect_image_frame" />
+    <joint name="kinect_image_frame_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="1.57 -1.57 0" />
+      <parent link="${reference_link}" />
+      <child link="kinect_image_frame" />
+    </joint>
+
+    <gazebo reference="kinect_image_frame">
+      <sensor type="depth" name="${camera_name}">
+        <always_on>true</always_on>
+        <update_rate>20.0</update_rate>
+        <camera>
+          <horizontal_fov>${60.0*PI/180.0}</horizontal_fov>
+          <image>
+            <format>R8G8B8</format>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>8.0</far>
+          </clip>
+        </camera>
+        <plugin name="kinect_camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <cameraName>camera</cameraName>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>10</updateRate>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <frameName>${reference_link}</frameName>
+          <baseline>0.1</baseline>
+          <distortion_k1>0.0</distortion_k1>
+          <distortion_k2>0.0</distortion_k2>
+          <distortion_k3>0.0</distortion_k3>
+          <distortion_t1>0.0</distortion_t1>
+          <distortion_t2>0.0</distortion_t2>
+          <pointCloudCutoff>0.4</pointCloudCutoff>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot>

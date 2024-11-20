@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="pb_core"
+          type="pb_core_node"
+          name="pb_core_node"
+          output="screen">
+        
+    </node>
+
+</launch>

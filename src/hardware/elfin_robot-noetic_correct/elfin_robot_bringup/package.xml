@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>elfin_robot_bringup</name>
+  <version>0.0.0</version>
+  <description>The elfin_robot_bringup package</description>
+
+  <maintainer email="liucong.cdhaw@gmail.com">Cong Liu</maintainer>
+
+  <license>BSD</license>
+
+  <author email="liucong.cdhaw@gmail.com">Cong Liu</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>controller_manager</run_depend>
+  <run_depend>elfin_ros_control</run_depend>
+  <run_depend>elfin_ros_control</run_depend>
+  <run_depend>joint_trajectory_controller</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+</package>

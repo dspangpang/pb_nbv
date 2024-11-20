@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<robot name="3d_gw_scanner_model" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:include filename="$(find gw_scanner_description)/urdf/gw_scanner.urdf.xacro"/>
+
+    <xacro:arg name="use_gazebo_sim" default="true"/>
+
+    <link name="world"/>
+    <xacro:gw_scanner parent = "world">
+        <origin xyz="0 0 1" rpy="-1.57 0 0"/>
+    </xacro:gw_scanner>
+</robot>

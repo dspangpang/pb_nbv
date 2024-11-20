@@ -1,0 +1,26 @@
+{
+    "extrinsics_depth_to_color":[
+        [1.0, 0.0, 0.0, 0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0, 0, 0, 1]
+    ],
+
+    "intrinsics_depth":[
+        [430.7037353515625, 0, 424.0],
+        [0, 430.7037353515625, 240.0],
+        [0, 0, 1]
+    ],
+
+    "intrinsics_color":[
+        [641.5226440429688, 0, 640.0],
+        [0, 641.5226440429688, 360.0],
+        [0, 0, 1]
+    ],
+    
+    "depth_scale": 0.001,
+    "depth_frame": "hand_eye_pub_depth_frame",
+    "color_frame": "hand_eye_pub_color_frame",
+    "arm_frame": "world",
+    "max_gripper_distance": 0.95
+}

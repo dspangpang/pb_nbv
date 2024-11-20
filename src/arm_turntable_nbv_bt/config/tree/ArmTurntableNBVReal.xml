@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="Turntable_NBV">
+    <!-- ////////// -->
+    <BehaviorTree ID="Turntable_NBV">
+        <Sequence>
+            <Sequence>
+                <SetBlackboard output_key="nbv_cnt" value="0"/>
+                <SetBlackboard output_key="pcd_file_path" value="file.pcd"/>
+                <SetBlackboard output_key="camera_dir" value="/file"/>
+                <SetBlackboard output_key="scanner_pose" value="[0 0 0 0 0 0 0]"/>
+                <SetBlackboard output_key="turntable_pose" value="[0 0 0 0 0 0 0]"/>
+                <SetBlackboard output_key="target_pose" value="[0 0 0 0 0 0 0]"/>
+                <SetBlackboard output_key="is_terminated" value="0"/>
+                <SetBlackboard output_key="turntable_angle" value="0"/>
+                <Action ID="AddObstacle" obstacle_name="ground" obstacle_pose="[0 0 -0.029 0 0 0 0]" obstacle_shape="box" obstacle_size="[1.7 2 0.05]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="backwall" obstacle_pose="[-0.42 0 1 0 0 0 0]" obstacle_shape="box" obstacle_size="[0.1 2 2]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="frame" obstacle_pose="[-0.3 0.32 1 0 0 0 0]" obstacle_shape="box" obstacle_size="[0.1 0.1 2]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="frame_1" obstacle_pose="[-0.3 -0.32 1 0 0 0 0]" obstacle_shape="box" obstacle_size="[0.1 0.1 2]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="target_area" obstacle_pose="[0.95 0 0.15 0 0 0 0]" obstacle_shape="box" obstacle_size="[0.2 0.2 0.2]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="upper" obstacle_pose="[0 0 1.45 0 0 0 0]" obstacle_shape="box" obstacle_size="[1.7 2 0.05]" parent_frame="world"/>
+                <Action ID="AddObstacle" obstacle_name="camera" obstacle_pose="[0.45 0.15 1.3 0 0 0 0]" obstacle_shape="box" obstacle_size="[0.2 0.35 0.2]" parent_frame="world"/>
+                <Action ID="TurntableToTarget" current_pose="{turntable_pose}" target_angle="0"/>
+            </Sequence>
+            <Repeat num_cycles="10">
+                <Sequence>
+                    <IfThenElse>
+                        <Condition ID="CheckTerminatedCondition" is_terminated="{is_terminated}"/>
+                        <Sequence>
+                            <Action ID="ComputeNBV" input_cnt="{nbv_cnt}" is_terminated="{is_terminated}" output_cnt="{nbv_cnt}" pcd_file_path="{pcd_file_path}" scanner_pose="{scanner_pose}"/>
+                            <IfThenElse>
+                                <Condition ID="CheckFirstFrameCondition" nbv_cnt="{nbv_cnt}"/>
+                                <AlwaysSuccess/>
+                                <Action ID="ComputeTurntableRotation" input_scanner_pose="{scanner_pose}" input_turntable_pose="{turntable_pose}" rotation_angle="{turntable_angle}" scanner_pose="{scanner_pose}"/>
+                            </IfThenElse>
+                            <Action ID="ComputeFrameTrans" known_frame_name="gw_scanner_depth_frame" known_frame_pose="{scanner_pose}" target_frame_name="dummy_gripper" target_frame_pose="{target_pose}"/>
+                            <Action ID="PubFrame" parent_frame="world" target_frame="{nbv_cnt}" target_pose="{scanner_pose}"/>
+                            <IfThenElse>
+                                <Condition ID="CheckFirstFrameCondition" nbv_cnt="{nbv_cnt}"/>
+                                <AlwaysSuccess/>
+                                <IfThenElse>
+                                    <Action ID="TurntableToTarget" current_pose="{turntable_pose}" target_angle="{turntable_angle}"/>
+                                    <AlwaysSuccess/>
+                                    <Sequence>
+                                        <Action ID="Wait" sleep_time_ms="4000"/>
+                                        <Action ID="TurntableToTarget" current_pose="{turntable_pose}" target_angle="{turntable_angle}"/>
+                                    </Sequence>
+                                </IfThenElse>
+                            </IfThenElse>
+                            <IfThenElse>
+                                <Action ID="ArmToTarget" arm_control_mode="0" joint_value="[0 0 0 0 0 0]" target_pose="{target_pose}"/>
+                                <AlwaysSuccess/>
+                                <Sequence>
+                                    <Action ID="ArmToTarget" arm_control_mode="3" joint_value="[0 0 0 0 0 0]" target_pose="[0 0 0 0 0 0 0]"/>
+                                    <Action ID="ArmToTarget" arm_control_mode="0" joint_value="[0 0 0 0 0 0]" target_pose="{target_pose}"/>
+                                </Sequence>
+                            </IfThenElse>
+                            <Action ID="gwCameraTrigger" cnt="{nbv_cnt}" current_dir="{camera_dir}" current_gray_file_path="" current_pcd_file_path="" current_rgb_file_path="" exposure_time="15" target_data_dir="auto"/>
+                            <Action ID="PcpTrigger" input_dir_path="{camera_dir}" output_pcd_path="{pcd_file_path}"/>
+                        </Sequence>
+                        <AlwaysSuccess/>
+                    </IfThenElse>
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="AddGazeboModel">
+            <input_port default="Armadillo" name="model_name">model name</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="model_pose">model place pose [x y z w x y z]</input_port>
+            <input_port default="world" name="model_ref_frame">model reference frame</input_port>
+        </Action>
+        <Action ID="AddObstacle">
+            <input_port default="ground" name="obstacle_name">添加的障碍物的名称</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="obstacle_pose">添加的障碍物的位姿</input_port>
+            <input_port default="box" name="obstacle_shape">添加的障碍物的形状</input_port>
+            <input_port default="[0 0 0]" name="obstacle_size">添加的障碍物的大小</input_port>
+            <input_port default="world" name="parent_frame">添加的障碍物的参考坐标系</input_port>
+        </Action>
+        <Action ID="ArmToTarget">
+            <input_port default="0" name="arm_control_mode">控制机械臂运动的模式: {0}:关节运动;{1}:笛卡尔运动;{2}:设置关节角度;{3}:设置关节弧度</input_port>
+            <input_port default="[0 0 0 0 0 0]" name="joint_value">目标的关节角度,数字的个数与机械臂关节数对应</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="target_pose">目标的位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+        </Action>
+        <Condition ID="CheckFirstFrameCondition">
+            <input_port default="0" name="nbv_cnt">nbv count times</input_port>
+        </Condition>
+        <Condition ID="CheckTerminatedCondition">
+            <input_port default="0" name="is_terminated">terminated flag</input_port>
+        </Condition>
+        <Action ID="ComputeFrameTrans">
+            <input_port default="known_frame" name="known_frame_name">known frame name</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="known_frame_pose">know frame pose [x y z w x y z]</input_port>
+            <input_port default="target_frame" name="target_frame_name">target frame name</input_port>
+            <output_port default="[0 0 0 0 0 0 0]" name="target_frame_pose">calculated frame pose [x y z w x y z]</output_port>
+        </Action>
+        <Action ID="ComputeNBV">
+            <input_port default="0" name="input_cnt">input nbv cnt</input_port>
+            <output_port default="0" name="is_terminated">NBV Termination condition</output_port>
+            <output_port default="0" name="output_cnt">next nbv cnt</output_port>
+            <input_port default="pointcloud.pcd" name="pcd_file_path">pointcloud captured by scanner</input_port>
+            <output_port default="[0 0 0 0 0 0 0]" name="scanner_pose">scanner pose computed by nbv strategy</output_port>
+        </Action>
+        <Action ID="ComputeTurntableRotation">
+            <input_port default="[0 0 0 0 0 0 0]" name="input_scanner_pose">输入位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="input_turntable_pose">输入位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+            <output_port default="0" name="rotation_angle">角度值</output_port>
+            <output_port default="[0 0 0 0 0 0 0]" name="scanner_pose">目标位姿,[x y z w x y z],必须保证数字的个数为7</output_port>
+        </Action>
+        <Action ID="GetPointCloud">
+            <input_port default="0" name="cnt">depth frames cnt</input_port>
+            <output_port default="pc.pcd" name="point_cloud_path">场景点云的存储路径</output_port>
+            <input_port default="/point_cloud" name="point_cloud_topic">ros发布点云数据的话题</input_port>
+        </Action>
+        <Action ID="GetPose">
+            <input_port default="world" name="link_name">robot link name</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="output_pose">link pose</input_port>
+        </Action>
+        <Action ID="MoveGazeboModel">
+            <input_port default="Armadillo" name="model_name">model name</input_port>
+            <input_port default="world" name="model_ref_frame">model reference frame</input_port>
+        </Action>
+        <Action ID="PcpTrigger">
+            <input_port default="/pcd" name="input_dir_path">camera data dir</input_port>
+            <output_port default="a.pcd" name="output_pcd_path">output pcd file path</output_port>
+        </Action>
+        <Action ID="PubFrame">
+            <input_port default="world" name="parent_frame">要发布的坐标系的参考坐标系</input_port>
+            <input_port default="object" name="target_frame">要发布的坐标系的名称</input_port>
+            <input_port default="[0 0 0 0 0 0 0]" name="target_pose">要发布的坐标系相对于参考坐标系的位姿，[x y z w x y z]</input_port>
+        </Action>
+        <Action ID="TurntableToTarget">
+            <output_port default="[0 0 0 0 0 0 0]" name="current_pose">current turntable support link pose</output_port>
+            <input_port default="0" name="target_angle">turntable target angle</input_port>
+        </Action>
+        <Action ID="Wait">
+            <input_port default="1000" name="sleep_time_ms">sleep_time_ms</input_port>
+        </Action>
+        <Action ID="WaitKey">
+            <output_port name="key_value">key value pressed</output_port>
+        </Action>
+        <Action ID="gwCameraTrigger">
+            <input_port default="0" name="cnt">current nbv cnt</input_port>
+            <output_port name="current_dir">current save data dir</output_port>
+            <output_port name="current_gray_file_path">camera gray file path</output_port>
+            <output_port name="current_pcd_file_path">camera pcd file path</output_port>
+            <output_port name="current_rgb_file_path">camera rgb file path</output_port>
+            <input_port default="20.0" name="exposure_time">camera exposure time ms</input_port>
+            <input_port default="auto" name="target_data_dir">camera save data dir path</input_port>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>

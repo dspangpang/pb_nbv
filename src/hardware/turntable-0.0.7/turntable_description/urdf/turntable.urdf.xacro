@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find turntable_description)/urdf/turntable_transmission.xacro" />
+  <xacro:macro name="turntable" params="parent *origin">
+    <xacro:turntable_transmission />
+    <joint name="turntable_base_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="turntable_base_link"/>
+        <xacro:insert_block name="origin"/>
+    </joint>
+    <link
+      name="turntable_base_link">
+      <inertial>
+        <origin
+          xyz="0.025941 0.017099 0.020883"
+          rpy="0 0 0" />
+        <mass
+          value="0.47747" />
+        <inertia
+          ixx="0.00034258"
+          ixy="7.1646E-06"
+          ixz="2.4443E-06"
+          iyy="0.00032297"
+          iyz="5.1465E-06"
+          izz="0.00058903" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://turntable_description/meshes/turntable_base_link.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.75294 0.75294 0.75294 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://turntable_description/meshes/turntable_base_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <link
+      name="turntable_support_link">
+      <inertial>
+        <origin
+          xyz="0 -2.0817E-17 -0.002003"
+          rpy="0 0 0" />
+        <mass
+          value="0.28146" />
+        <inertia
+          ixx="0.0015904"
+          ixy="1.3056E-22"
+          ixz="5.1773E-24"
+          iyy="0.0015904"
+          iyz="5.1068E-23"
+          izz="0.00318" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://turntable_description/meshes/turntable_support_link.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="1 1 1 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://turntable_description/meshes/turntable_support_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint
+      name="turntable_support_joint"
+      type="revolute">
+      <origin
+        xyz="0 0 0.049"
+        rpy="0 0 0" />
+      <parent
+        link="turntable_base_link" />
+      <child
+        link="turntable_support_link" />
+      <axis
+        xyz="0 0 1" />
+      <limit
+        lower="-3.1415926"
+        upper="3.1415926"
+        effort="10"
+        velocity="10" />
+    </joint>
+  </xacro:macro>
+</robot>

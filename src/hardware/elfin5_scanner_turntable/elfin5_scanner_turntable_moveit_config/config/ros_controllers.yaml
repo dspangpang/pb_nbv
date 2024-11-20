@@ -1,0 +1,50 @@
+elfin_arm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - elfin_joint1
+    - elfin_joint2
+    - elfin_joint3
+    - elfin_joint4
+    - elfin_joint5
+    - elfin_joint6
+  gains:
+    elfin_joint1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    elfin_joint2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    elfin_joint3:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    elfin_joint4:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    elfin_joint5:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    elfin_joint6:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+turntable_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - turntable_support_joint
+  gains:
+    turntable_support_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1

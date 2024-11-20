@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <node pkg="turntable_ros_controller" 
+        name="turntable_ros_controller_node" 
+        type="turntable_ros_controller_node" 
+        output="screen"
+        respawn="true">
+
+    </node>
+
+    <!-- <node pkg="turntable_ros_controller" name="turntable_ros_controller_node" type="turntable_ros_controller_node" >
+
+    </node> -->
+
+</launch>

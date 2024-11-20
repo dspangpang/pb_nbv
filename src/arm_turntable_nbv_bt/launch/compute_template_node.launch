@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="arm_turntable_nbv_bt" type="compute_template_node" name="compute_template_node" output="screen" />
+
+</launch>

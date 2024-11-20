@@ -1,0 +1,4 @@
+string input_dir_path
+geometry_msgs/Pose current_camera_pose
+---
+string output_pcd_path

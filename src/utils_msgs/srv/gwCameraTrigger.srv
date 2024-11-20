@@ -1,0 +1,5 @@
+float64 exposure_time
+string target_data_dir
+---
+string current_data_dir
+int64 result

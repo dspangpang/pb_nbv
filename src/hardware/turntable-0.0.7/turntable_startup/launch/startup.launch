@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <include file="$(dirname)/hardware_startup.launch" />
+    <include file="$(dirname)/software_startup.launch" />
+
+</launch>

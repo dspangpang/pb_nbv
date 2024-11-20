@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<launch>
+
+    <include file="$(dirname)/elfin5_scanner_turntable_planning_execution.launch" />
+
+    <include file="$(dirname)/elfin_ros_controller.launch" />
+
+    <include file="$(dirname)/turntable_ros_controller.launch" />
+
+</launch>

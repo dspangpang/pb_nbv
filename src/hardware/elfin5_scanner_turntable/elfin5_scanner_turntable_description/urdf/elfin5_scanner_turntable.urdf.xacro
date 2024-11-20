@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot name="elfin5_scanner_turntable" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:arg name="use_gazebo_sim" default="true"/>
+
+    <!-- 相机支架与机械臂末端偏角 22.5 degree 转弧度为 0.392699082 -->
+    <xacro:arg name="deflection_angle" default="0.392699082" />
+
+   <!-- 加载elfin5模型 -->
+    <xacro:include filename="$(find elfin_description)/urdf/elfin5.xacro" />
+    <!-- gw_scanner_mount模型 -->
+    <xacro:include filename="$(find gw_scanner_mount_description)/urdf/gw_scanner_mount.urdf.xacro" />
+    <!-- gw_scanner模型 -->
+    <xacro:include filename="$(find gw_scanner_description)/urdf/gw_scanner.urdf.xacro" />
+    <!-- turntable模型 -->
+    <xacro:include filename="$(find turntable_description)/urdf/turntable.urdf.xacro"/>
+    
+    <!-- world -->
+    <link name="world" />
+
+    <!-- turntable -> world -->
+    <xacro:turntable parent="world">
+        <origin xyz="0.95 0 -0.01" rpy="0 0 0"/>
+    </xacro:turntable>
+
+    <!-- 机械臂连接 -> world -->
+    <xacro:elfin5 parent="world">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:elfin5>
+
+    <link name="dummy_gripper"/>
+    <joint name="dummy_joint" type="fixed">
+        <!-- 手爪末端 虚拟关节 -->
+        <origin
+            xyz="0 0 0"
+            rpy="0 0 0" />
+        <parent
+            link="elfin_end_link" />
+        <child
+            link="dummy_gripper" />
+    </joint>
+
+    <!-- tools_mount -> elfen5 -->
+    <xacro:gw_scanner_mount parent="elfin_end_link" >
+        <origin xyz = "0 0 -0.006" rpy = "0 0 -${pi/2 + 0.392699082}"/>
+    </xacro:gw_scanner_mount>
+
+    <!-- gw_scanner -> tools_mount -->
+    <xacro:gw_scanner parent="gw_scanner_support_link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:gw_scanner>
+
+</robot>

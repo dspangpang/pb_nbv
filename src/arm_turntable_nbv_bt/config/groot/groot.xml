@@ -1,0 +1,72 @@
+<root>
+    <TreeNodesModel>
+        <Action ID="AddGazeboModel">
+            <input_port name="model_name" default="Armadillo">model name</input_port>
+            <input_port name="model_pose" default="[0 0 0 0 0 0 0]">model place pose [x y z w x y z]</input_port>
+            <input_port name="model_ref_frame" default="world">model reference frame</input_port>
+        </Action>
+        <Action ID="AddObstacle">
+            <input_port name="obstacle_name" default="ground">添加的障碍物的名称</input_port>
+            <input_port name="obstacle_pose" default="[0 0 0 0 0 0 0]">添加的障碍物的位姿</input_port>
+            <input_port name="obstacle_shape" default="box">添加的障碍物的形状</input_port>
+            <input_port name="obstacle_size" default="[0 0 0]">添加的障碍物的大小</input_port>
+            <input_port name="parent_frame" default="world">添加的障碍物的参考坐标系</input_port>
+        </Action>
+        <Action ID="ArmToTarget">
+            <input_port name="arm_control_mode" default="0">控制机械臂运动的模式: {0}:关节运动;{1}:笛卡尔运动;{2}:设置关节角度;{3}:设置关节弧度</input_port>
+            <input_port name="joint_value" default="[0 0 0 0 0 0]">目标的关节角度,数字的个数与机械臂关节数对应</input_port>
+            <input_port name="target_pose" default="[0 0 0 0 0 0 0]">目标的位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+        </Action>
+        <Condition ID="CheckFirstFrameCondition">
+            <input_port name="nbv_cnt" default="0">nbv count times</input_port>
+        </Condition>
+        <Condition ID="CheckTerminatedCondition">
+            <input_port name="is_terminated" default="0">terminated flag</input_port>
+        </Condition>
+        <Action ID="ComputeFrameTrans">
+            <input_port name="known_frame_name" default="known_frame">known frame name</input_port>
+            <input_port name="known_frame_pose" default="[0 0 0 0 0 0 0]">know frame pose [x y z w x y z]</input_port>
+            <input_port name="target_frame_name" default="target_frame">target frame name</input_port>
+            <output_port name="target_frame_pose" default="[0 0 0 0 0 0 0]">calculated frame pose [x y z w x y z]</output_port>
+        </Action>
+        <Action ID="ComputeNBV">
+            <input_port name="input_cnt" default="0">input nbv cnt</input_port>
+            <output_port name="is_terminated" default="0">NBV Termination condition</output_port>
+            <output_port name="output_cnt" default="0">next nbv cnt</output_port>
+            <input_port name="pcd_file_path" default="pointcloud.pcd">pointcloud captured by scanner</input_port>
+            <output_port name="scanner_pose" default="[0 0 0 0 0 0 0]">scanner pose computed by nbv strategy</output_port>
+        </Action>
+        <Action ID="ComputeTurntableRotation">
+            <input_port name="input_scanner_pose" default="[0 0 0 0 0 0 0]">输入位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+            <input_port name="input_turntable_pose" default="[0 0 0 0 0 0 0]">输入位姿,[x y z w x y z],必须保证数字的个数为7</input_port>
+            <output_port name="rotation_angle" default="0">角度值</output_port>
+            <output_port name="scanner_pose" default="[0 0 0 0 0 0 0]">目标位姿,[x y z w x y z],必须保证数字的个数为7</output_port>
+        </Action>
+        <Action ID="GetPointCloud">
+            <input_port name="cnt" default="0">depth frames cnt</input_port>
+            <output_port name="point_cloud_path" default="pc.pcd">场景点云的存储路径</output_port>
+            <input_port name="point_cloud_topic" default="/point_cloud">ros发布点云数据的话题</input_port>
+        </Action>
+        <Action ID="MoveGazeboModel">
+            <input_port name="model_name" default="Armadillo">model name</input_port>
+            <input_port name="model_ref_frame" default="world">model reference frame</input_port>
+        </Action>
+        <Action ID="PubFrame">
+            <input_port name="parent_frame" default="world">要发布的坐标系的参考坐标系</input_port>
+            <input_port name="target_frame" default="object">要发布的坐标系的名称</input_port>
+            <input_port name="target_pose" default="[0 0 0 0 0 0 0]">要发布的坐标系相对于参考坐标系的位姿，[x y z w x y z]</input_port>
+        </Action>
+        <Action ID="TurntableToTarget">
+            <output_port name="current_pose" default="[0 0 0 0 0 0 0]">current turntable support link pose</output_port>
+            <input_port name="target_angle" default="0">turntable target angle</input_port>
+        </Action>
+        <Action ID="gwCameraTrigger">
+            <output_port name="current_gray_file_path">camera gray file path</output_port>
+            <output_port name="current_pcd_file_path">camera pcd file path</output_port>
+            <output_port name="current_rgb_file_path">camera rgb file path</output_port>
+            <input_port name="exposure_time" default="20.0">camera exposure time ms</input_port>
+            <input_port name="target_data_dir" default="auto">camera save data dir path</input_port>
+        </Action>
+    </TreeNodesModel>
+</root>
+
