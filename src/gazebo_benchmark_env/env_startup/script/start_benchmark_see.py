@@ -23,12 +23,14 @@ from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 method_type = ["see"]
 see_config_file = "/root/work_place/pb_nbv/src/see_core/launch/run_see.launch"
+default_rho = 1200000
 # 最小迭代次数
 min_iter = 8
 
 # 初始化realsense pose 的 tf 变换
 realsense_pose = Pose()
 realsense_pose.position.x = 0.0
+
 realsense_pose.position.y = 0.0
 realsense_pose.position.z = 0.0
 realsense_pose.orientation.x = 0.0
@@ -128,11 +130,12 @@ if __name__ == '__main__':
                 model_folder = folder_name + "/" + model_name
                 if not os.path.exists(model_folder):
                     os.makedirs(model_folder)
+                    modify_tho_launch_file(see_config_file, default_rho)
                 elif os.path.exists(model_folder + "/done.txt"):
                     if os.path.exists(model_folder + "/less_iter.txt"):
                         # 读取文件夹中的配准文件信息
                         current_rho = read_rho_from_launch(model_folder+"/run_see.launch")
-                        modify_tho_launch_file(see_config_file, current_rho*2)
+                        modify_tho_launch_file(see_config_file, current_rho*1.125)
                         # 清空文件夹
                         os.system("rm -rf " + model_folder + "/*")
                     else:
@@ -300,6 +303,10 @@ if __name__ == '__main__':
                     # 在文件夹中创建一个文件
                     with open(model_folder + "/less_iter.txt", "w") as f:
                         f.write("done iteration !")
+                else:
+                    # 如果迭代次数大于等于 min_iter，则删除 less_iter.txt 文件
+                    if os.path.exists(model_folder + "/less_iter.txt"):
+                        os.remove(model_folder + "/less_iter.txt")
                         
                 # 在文件夹中创建一个文件
                 with open(model_folder + "/done.txt", "w") as f:

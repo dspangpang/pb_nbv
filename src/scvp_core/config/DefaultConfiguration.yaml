@@ -2,11 +2,11 @@
 model_path: "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/"
 nbv_net_path: "/root/work_place/pb_nbv/src/scvp_core/nbv-net"
 sc_net_path: "/root/work_place/pb_nbv/src/scvp_core/sc-net"
-name_of_pcd: hb_models/pcd/obj_000011
-method_of_IG : 0
-octomap_resolution: 0.03
+name_of_pcd: hb_models/pcd/obj_000009
+method_of_IG: 7
+octomap_resolution: 0.006
 ground_truth_resolution: 0.01
-num_of_max_iteration: 30
+num_of_max_iteration: 10
 show: 0
 move_wait : 0
 p_unknown_upper_bound: 0.65

@@ -52,8 +52,10 @@ if __name__ == "__main__":
     model_name = sys.argv[1] if len(sys.argv) > 1 else "default_model"
     model_pose_str = sys.argv[2] if len(sys.argv) > 2 else "0 0 0 0 0 0 1"
     model_ref_frame = sys.argv[3] if len(sys.argv) > 3 else "world"
-
-    model_file_path ="/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/hb_models/sdf/obj_000001.sdf"
+    
+    model_type = "stanford_models"
+    model_cnt = "1"
+    model_file_path =f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_type}/sdf/obj_00000{model_cnt}.sdf"
 
     # 解析模型姿态
     pose_values = list(map(float, model_pose_str.split()))

@@ -18,7 +18,7 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
-method_type = ["mcmf"]
+method_type = ["scvp"]
 scvp_config_file = "/root/work_place/pb_nbv/src/scvp_core/config/DefaultConfiguration.yaml"
 
 # 由于scvp的坐标系和gazebo相机的坐标系不同，所以需要一个矩阵进行转换
@@ -84,6 +84,34 @@ if __name__ == '__main__':
             folder_name = res_data + model_type + "_" + method
             if not os.path.exists(folder_name):
                 os.makedirs(folder_name)
+
+            current_method_code = None
+            if method == "mcmf":
+                current_method_code = 0
+            elif method == "nbv_net":
+                current_method_code = 6
+            elif method == "scvp":
+                current_method_code = 7
+
+            # 修改scvp的配置文件
+            with open(scvp_config_file, "r") as f:
+                lines = f.readlines()
+            with open(scvp_config_file, "w") as f:
+                for line in lines:
+                    if "method_of_IG" in line:
+                        f.write("method_of_IG: " + str(current_method_code) + "\n")
+                    elif "octomap_resolution" in line: # 要保证体素数量为 32*32*32
+                        if current_method_code == 6:
+                            f.write("octomap_resolution: 0.006\n")
+                        elif current_method_code == 7:
+                            f.write("octomap_resolution: 0.006\n")
+                        else:
+                            f.write("octomap_resolution: 0.03\n")
+                    elif "num_of_max_iteration" in line:
+                        f.write("num_of_max_iteration: " + str(nbv_iter) + "\n")
+                    else:
+                        f.write(line)
+
             # 遍历所有模型文件
             for model_file in model_files:
                 # 创建文件夹
@@ -107,6 +135,7 @@ if __name__ == '__main__':
                         else:
                             f.write(line)
 
+                pcd_name = model_type + "/pcd/" + model_name
 
                 # 复制配置文件到文件夹
                 command = "cp " + scvp_config_file + " " + model_folder
@@ -146,8 +175,13 @@ if __name__ == '__main__':
 
                 time.sleep(1)
 
+                # 启动 scvp
                 command = ["roslaunch", "scvp_core", "run_scvp.launch"]
-                subprocess.Popen(command)
+                scvp_process = subprocess.Popen(command)
+
+                # 启动 nbv_net
+                command = ["python3", "/root/work_place/pb_nbv/src/scvp_core/sc-net/run_test.py", pcd_name, str(nbv_iter)]
+                sc_net_porcess = subprocess.Popen(command)
 
                 time.sleep(3)
                 
@@ -165,7 +199,6 @@ if __name__ == '__main__':
                     print("Waiting for pose data...")
                     pose = rospy.wait_for_message(pose_topic, Pose)
                     key_time = time.time()
-
                     nbv_matrix = pose_to_matrix(pose)
 
                     # 新建txt文件保存 NBV 位姿
@@ -240,5 +273,9 @@ if __name__ == '__main__':
 
                 command = ["rosnode", "kill", "/scvp_core_node"]
                 subprocess.Popen(command)
+
+                # scvp_process.terminate()
+                sc_net_porcess.terminate()
+                
                 time.sleep(2)
 

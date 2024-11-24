@@ -21,7 +21,7 @@ base_to_depth = np.linalg.inv(np.array([[ 0.00000000e+00, -1.00000000e+00,  0.00
                           [ 1.00000000e+00,  1.11022302e-16,  0.00000000e+00, -6.93889390e-18],
                           [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]))
 
-nbv_iter = 15
+nbv_iter = 10
 
 def quaternion_to_matrix(position, quaternion):
     # 使用scipy库将四元数转换为旋转矩阵
@@ -72,13 +72,14 @@ def save_point_cloud(data, camera_pose, path="point_cloud.pcd", voxel_size=0.000
 
     # 将ROS点云消息转换为Open3D点云
     cloud_points = list(pc2.read_points(data, skip_nans=True, field_names=("x", "y", "z", "rgb")))
-    if len(cloud_points) == 0:
-        rospy.logwarn("No points found in the point cloud.")
-        return trans
 
     # 创建Open3D点云对象
     cloud = o3d.geometry.PointCloud()
     cloud.points = o3d.utility.Vector3dVector([(p[0], p[1], p[2]) for p in cloud_points])
+    
+    if len(cloud.points) == 0:
+        # 添加一个点，避免空点云
+        cloud.points = o3d.utility.Vector3dVector([(0, 0, 0)])
     
     # 处理颜色信息，确保颜色信息是整数类型
     colors = []

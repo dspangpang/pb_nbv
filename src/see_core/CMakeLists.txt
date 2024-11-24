@@ -3,6 +3,8 @@ project(see_core)
 
 ## Compile as C++14, supported in ROS Kinetic and newer
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -std=c++14 -fopenmp -fPIC")
+# 设置编译选项为 release
+set(CMAKE_BUILD_TYPE "Release")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)

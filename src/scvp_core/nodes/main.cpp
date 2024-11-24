@@ -316,6 +316,7 @@ public:
 		}
 		//节点数与方案数
 		n = view_set_label.size() + 1;
+		cout << "n = " << n << endl;
 		m = 1LL << n;
 		//local path 完全无向图
 		graph.resize(n);
@@ -604,6 +605,8 @@ public:
 #ifdef ROS
 		cout << "object size is " << predicted_size << " m." << endl;
 		now_view_space = new View_Space(iterations, share_data, voxel_information, share_data->cloud_ground_truth, first_view_id, predicted_size);
+		
+
 #else
 		now_view_space = new View_Space(iterations, share_data, voxel_information, share_data->cloud_ground_truth, first_view_id);
 #endif
@@ -698,6 +701,7 @@ public:
 						ftest.open(share_data->nbv_net_path + "/log/ready.txt");
 					} while (!ftest.is_open());
 					ftest.close();
+					share_data->access_directory(share_data->nbv_net_path + "/log/" + share_data->name_of_pcd);
 					ifstream fin(share_data->nbv_net_path + "/log/" + share_data->name_of_pcd + '_' + to_string(iterations) + ".txt");
 					int id;
 					fin >> id;
@@ -721,7 +725,24 @@ public:
 							ftest.open(share_data->sc_net_path + "/log/ready.txt");
 						} while (!ftest.is_open());
 						ftest.close();
+						share_data->access_directory(share_data->sc_net_path + "/log/" + share_data->name_of_pcd);
+#ifdef ROS
+						size_t pos = share_data->name_of_pcd.find_last_of('/');
+						std::string file_name;
+						if (pos != std::string::npos) {
+							file_name = share_data->name_of_pcd.substr(pos + 1);
+						} else {
+							std::cerr << "No '/' found in the string" << std::endl;
+						}
+						std::string file_path = share_data->sc_net_path + "/log/" + share_data->name_of_pcd + "/" + file_name + ".txt";
+						ifstream fin(file_path);
+						// 判断是否打开了文件
+						if (!fin.is_open()) {
+							cout << "cannot open file." << endl;
+						}
+#else
 						ifstream fin(share_data->sc_net_path + "/log/" + share_data->name_of_pcd + ".txt");
+#endif
 						vector<int> view_set_label;
 						int rest_view_id;
 						while (fin >> rest_view_id) {
@@ -950,6 +971,7 @@ void create_views_information(Views_Information** now_views_infromation, View* n
 	if (share_data->method_of_IG == 6) { //NBV-NET
 		//octotree
 		share_data->access_directory(share_data->nbv_net_path + "/data");
+		share_data->access_directory(share_data->nbv_net_path + "/data/" + share_data->name_of_pcd);
 		ofstream fout(share_data->nbv_net_path + "/data/" + share_data->name_of_pcd +'_'+ to_string(iterations) + ".txt");
 		int num_of_square_voxels = 0;
 		for (double x = now_view_space->object_center_world(0) - now_view_space->predicted_size; x <= now_view_space->object_center_world(0) + now_view_space->predicted_size; x += share_data->octomap_resolution)
@@ -967,6 +989,7 @@ void create_views_information(Views_Information** now_views_infromation, View* n
 		if (iterations == 0) {
 			//octotree
 			share_data->access_directory(share_data->sc_net_path + "/data");
+			share_data->access_directory(share_data->sc_net_path + "/data/" + share_data->name_of_pcd);
 			ofstream fout(share_data->sc_net_path + "/data/" + share_data->name_of_pcd + ".txt");
 			int num_of_square_voxels = 0;
 			for (double x = now_view_space->object_center_world(0) - now_view_space->predicted_size; x <= now_view_space->object_center_world(0) + now_view_space->predicted_size; x += share_data->octomap_resolution)

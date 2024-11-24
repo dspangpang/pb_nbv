@@ -3,7 +3,7 @@ import open3d as o3d
 import trimesh
 import numpy as np
 
-model_pkg = "hb_models"
+model_pkg = "stanford_models"
 rescale = True
 
 ply_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/models"
