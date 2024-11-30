@@ -23,9 +23,9 @@ from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 method_type = ["see"]
 see_config_file = "/root/work_place/pb_nbv/src/see_core/launch/run_see.launch"
-default_rho = 1200000
+default_rho = 1500000
 # 最小迭代次数
-min_iter = 8
+min_iter = 10
 
 # 初始化realsense pose 的 tf 变换
 realsense_pose = Pose()
@@ -132,14 +132,7 @@ if __name__ == '__main__':
                     os.makedirs(model_folder)
                     modify_tho_launch_file(see_config_file, default_rho)
                 elif os.path.exists(model_folder + "/done.txt"):
-                    if os.path.exists(model_folder + "/less_iter.txt"):
-                        # 读取文件夹中的配准文件信息
-                        current_rho = read_rho_from_launch(model_folder+"/run_see.launch")
-                        modify_tho_launch_file(see_config_file, current_rho*1.125)
-                        # 清空文件夹
-                        os.system("rm -rf " + model_folder + "/*")
-                    else:
-                        continue
+                    continue
                 else:
                     # 清空文件夹
                     os.system("rm -rf " + model_folder + "/*")
@@ -172,8 +165,10 @@ if __name__ == '__main__':
                     rospy.logerr("Failed to spawn model: %s" % message)
 
                 # 设置 realsense 的初始位置
-                position = [0.9, 0.0, 0.0]
+                position = [0.9, 1.75000000e-02, -1.25000000e-02]
                 orientation = [0.0, 0.0, 1.0, 0.0]
+                tmp_position = base_to_depth
+
                 success, message = set_model_state("realsense", position, orientation, linear_velocity, angular_velocity)
                 if success:
                     rospy.loginfo("Model state set successfully: %s" % message)
@@ -190,6 +185,34 @@ if __name__ == '__main__':
                     rospy.logerr("Failed to set model state: %s" % message)
 
                 time.sleep(1)
+
+                # 创建第一帧文件夹
+                iter_folder = model_folder + "/iter_1"
+                if not os.path.exists(iter_folder):
+                    os.makedirs(iter_folder)
+
+                # 在第一帧文件夹中保存一帧点云数据
+                point_cloud_data = rospy.wait_for_message("/d435/depth/color/points", PointCloud2)
+                camera_pose = quaternion_to_matrix(position, orientation)
+                camera_pose = save_point_cloud(point_cloud_data, camera_pose, iter_folder)
+                if camera_pose is None:
+                    rospy.logerr("Failed to save point cloud data!")
+                    exit(-1)
+                # 新建txt文件夹保存相机位姿 camera_pose
+                pose_file = iter_folder + "/camera_pose.txt"
+                with open(pose_file, "w") as f:
+                    f.write(str(camera_pose))
+
+                # 新建文件夹保存 耗时
+                time_file = iter_folder + "/time.txt"
+                with open(time_file, "w") as f:
+                    f.write("0")
+
+                # 新建文件夹保存 NBV 位姿
+                pose_file = iter_folder + "/nbv_pose.txt"
+                with open(pose_file, "w") as f:
+                    f.write(str(camera_pose))
+
 
                 command = ["roslaunch", "see_core", "run_see.launch"]
                 subprocess.Popen(command)
@@ -211,8 +234,8 @@ if __name__ == '__main__':
                 # nbv 迭代30次
                 nbv_done = False
                 print("nvb_iter: ", nbv_iter)
-                current_iter = 0
-                for i in range(nbv_iter):
+                current_iter = 1
+                for i in range(1, nbv_iter):
                     iter_folder = model_folder + "/iter_" + str(i+1)
                     if not os.path.exists(iter_folder):
                         os.makedirs(iter_folder)

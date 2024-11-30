@@ -88,9 +88,17 @@ if __name__ == '__main__':
     ans = []
     for i in range(pred.shape[1]):
         if pred[0][i] == 1:
-            print(i)
             ans.append(i)
-    
+
+
+    # 如果 ans 的长度为 小于10 则用最后一个数填充
+    while len(ans) < 10:
+        ans.append(ans[-1])
+
+    # 如果 ans 中存在0 则删除
+    while 0 in ans:
+        ans.remove(0)
+        
     # 从 name_of_model 提取 / 之后的字符串
     model_name = name_of_model.split('/')[-1]
     # 如果文件夹不存在则创建

@@ -28,10 +28,6 @@ private:
 
     // 点云参数
     std::vector<Eigen::Vector3d> occupied_voxels_;
-    std::vector<Eigen::Vector3d> frontier_voxels_;
-    std::vector<Eigen::Vector3d> unknown_voxels_;
-    std::vector<Eigen::Vector3d> free_voxels_;
-    
 
     // voxel_map 参数
     double voxel_resolution_;

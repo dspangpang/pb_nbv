@@ -4,6 +4,7 @@ import time
 import sys
 import os
 import subprocess
+import json
 
 import rospy
 from geometry_msgs.msg import Pose
@@ -17,7 +18,7 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, matrix_to_pose, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
-method_type = ["pb"]
+method_type = ["pb-1-5-0.9,0,0", "pb-1-40-0.9,0,0", "pb-2-10-0.9,0,0", "pb-4-10-0.9,0,0", "pb-8-10-0.9,0,0", "pb-4-10-0,0.9,0", "pb-4-10-0,0,0.9", "pb-4-10-0,0.636,0.636"]
 pb_config_file = "/root/work_place/pb_nbv/src/pb_core/config/config.json"
 
 if __name__ == '__main__':
@@ -70,6 +71,33 @@ if __name__ == '__main__':
         model_files = os.listdir(model_file_path)
         # 遍历所有算法
         for method in method_type:
+            
+            # 从method 中获取参数
+            method_values = method.split("-")
+            gp = method_values[1]
+            t_max = method_values[2]
+            init_pose = method_values[3]
+            print("gp: ", gp)
+            print("t_max: ", t_max)
+            print("init_pose: ", init_pose)
+            # 从 init_pose 中 根据逗号分隔符获取三个参数
+            init_pose_values = init_pose.split(",")
+            init_x = init_pose_values[0]
+            init_y = init_pose_values[1]
+            init_z = init_pose_values[2]
+
+            init_array = np.array([float(init_x), float(init_y), float(init_z)])
+
+            # 修改 json 配置文件
+            with open(pb_config_file, "r", encoding="utf-8") as f:
+                config = json.load(f)
+                config["partition_step_angle_size"] = 360.0 / int(gp)
+                config["max_gmm_cluster_num"] = int(t_max)
+                config["first_viewpoint_position"] = [init_array.tolist()]
+
+            with open(pb_config_file, "w", encoding="utf-8") as f:
+                json.dump(config, f)
+
             # 创建文件夹
             folder_name = res_data + model_type + "_" + method
             if not os.path.exists(folder_name):
@@ -202,6 +230,11 @@ if __name__ == '__main__':
 
                             pcd_file_path = iter_folder + "/point_cloud.pcd"
 
+                            # 保存体素数量 和 椭球数量 到文件
+                            with open(iter_folder + "/voxel_num.txt", "w") as f:
+                                f.write(str(response.voxel_map_size))
+                            with open(iter_folder + "/ellipsoid_num.txt", "w") as f:
+                                f.write(str(response.ellipsoids_size))
 
                         else:
                             rospy.logerr("NBV algorithm failed !")
@@ -219,6 +252,15 @@ if __name__ == '__main__':
                     rospy.loginfo("Model deleted successfully: %s" % message)
                 else:
                     rospy.logerr("Failed to delete model: %s" % message)
+
+                time.sleep(1)
+                # 删除模型
+                success, message = delete_model(model_name)
+                if success:
+                    rospy.loginfo("Model deleted successfully: %s" % message)
+                else:
+                    rospy.logerr("Failed to delete model: %s" % message)
+                time.sleep(1)
 
                 command = ["rosnode", "kill", "/pb_core_node"]
                 subprocess.Popen(command)

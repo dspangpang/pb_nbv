@@ -16,4 +16,8 @@ src/gazebo_benchmark_env/env_startup/models/*
 !src/gazebo_benchmark_env/env_startup/models/.gitkeep
 src/scvp_core/sc-net/pt/*
 !src/scvp_core/sc-net/pt/.gitkeep
+src/scvp_core/nbv-net/data/**
+!src/scvp_core/nbv-net/data/.gitkeep
+src/scvp_core/scvp-net/data/**
+!src/scvp_core/scvp-net/data/.gitkeep
 *.pyc

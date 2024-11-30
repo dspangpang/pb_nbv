@@ -5,8 +5,8 @@
 * Install Ros
     * http://wiki.ros.org/noetic/Installation/Ubuntu (use full desktop install, include opencv, pcl)
 * Install Dependencies
-    * apt install libnlopt-dev libnlopt-cxx-dev ros-noetic-geometric-shapes libjsoncpp-dev libcgal-dev
-    * apt-get install ros-noetic-soem ros-noetic-gazebo-ros-control ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-moveit-* ros-noetic-trac-ik ros-noetic-octovis ros-noetic-behaviortree-cpp-v3 psmisc (add for robotic arm control)
+    * apt install libnlopt-dev libnlopt-cxx-dev ros-noetic-geometric-shapes libjsoncpp-dev libcgal-dev ttf-mscorefonts-installer
+    * apt-get install ros-noetic-soem ros-noetic-gazebo-ros-control ros-noetic-ros-control ros-noetic-ros-controllers ros-noetic-moveit-* ros-noetic-trac-ik ros-noetic-octovis ros-noetic-behaviortree-cpp-v3 psmisc (add for robotic arm control) 
 * Compile Dependencies
     * pb_nbv/3rdparty/lemon-1.3.1
     * pb_nbv/3rdparty/gflag-2.2.2 (-DBUILD_SHARED_LIBS="on")

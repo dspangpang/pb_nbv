@@ -94,9 +94,9 @@ private:
         camera_pose.orientation.z = camera_pose_quaternion.z();
         
         res.nbv_camera_pose = camera_pose;
-
         res.is_terminated = (is_terminal == 1) ? true : false;
-
+        res.voxel_map_size = pb_nbv.get_voxel_map_size();
+        res.ellipsoids_size = pb_nbv.get_ellipsoid_size();
         res.result = 0;
 
         LOG(INFO) << "NBVTrigger next best view done ! ";

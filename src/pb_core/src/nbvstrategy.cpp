@@ -40,8 +40,7 @@ nbvstrategy::nbvstrategy(){
 
     // nbv 策略相关参数
     max_gmm_cluster_num_ = parseJsonInt(config_file_path, "max_gmm_cluster_num");
-    min_gmm_cluster_num_ = parseJsonInt(config_file_path, "min_gmm_cluster_num");
-
+    min_gmm_cluster_num_ = 5;
     // 相机参数解算
     camera_intrinsic_ = parseJsonEigenMatrix(config_file_path, "camera_intrinsic");
     double camera_focal_length_factor = parseJsonDouble(config_file_path, "camera_focal_length_factor");

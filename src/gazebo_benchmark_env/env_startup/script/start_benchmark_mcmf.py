@@ -18,7 +18,7 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
-method_type = ["mcmf", "apora"]
+method_type = ["mcmf"]
 scvp_config_file = "/root/work_place/pb_nbv/src/scvp_core/config/DefaultConfiguration.yaml"
 
 # 由于scvp的坐标系和gazebo相机的坐标系不同，所以需要一个矩阵进行转换

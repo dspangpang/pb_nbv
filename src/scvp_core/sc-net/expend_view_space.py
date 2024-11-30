@@ -8,7 +8,7 @@ def read_vectors(file_path):
     return vectors
 
 def extend_vectors(vectors, scale_factor):
-    extended_vectors = [np.abs(np.array(vector) * scale_factor) for vector in vectors]
+    extended_vectors = [(np.array(vector) * scale_factor) for vector in vectors]
     return extended_vectors
 
 def write_vectors(file_path, vectors):

@@ -31,6 +31,14 @@ public:
 
     void visualization_start();
 
+    int get_voxel_map_size(){
+        return voxel_map_size_;
+    }
+
+    int get_ellipsoid_size(){
+        return ellipsoid_size_;
+    }
+
 public:
   
 private:
@@ -40,6 +48,9 @@ private:
     std::string data_root_path_;
     bool enable_visualization_;
     bool is_done_;
+
+    int voxel_map_size_;
+    int ellipsoid_size_;
 
 private:
     voxelstruct is;

@@ -1,12 +1,21 @@
 #include "../include/pb_core/voxelstruct.h"
 #include <chrono>
+// 全局维护的 _voxel_map
+// 用于判断voxel_map中的点是否被扫描到
+octomap::ColorOcTree _voxel_map(1);
+// 用于判断当前的voxel_map中的点是否被扫描到
+octomap::ColorOcTree _bbx_voxel_map(1);
 
 voxelstruct::voxelstruct(){
 
     std::string config_file_path = "/root/work_place/pb_nbv/src/pb_core/config/config.json";
-    
+
     occupied_voxels_.clear();
     voxel_resolution_ = parseJsonDouble(config_file_path, "voxel_resolution");
+    _voxel_map.setResolution(voxel_resolution_);
+    _bbx_voxel_map.setResolution(voxel_resolution_);
+    _voxel_map.clear();
+    _bbx_voxel_map.clear();
 
     // 相机参数解算
     Eigen::MatrixXd camera_intrinsic = parseJsonEigenMatrix(config_file_path, "camera_intrinsic");
@@ -38,58 +47,93 @@ update_voxel_map(
     
     octomap::ColorOcTree voxel_map(voxel_resolution_);
 
+    bool is_first = true;
+    if (occupied_voxels_.size() > 0)
+    {
+        is_first = false;
+    }
+
     if (cloud->size() == 0)
     {
         LOG(WARNING) << "cloud is empty";
         return voxel_map;
     }
-
-    bool is_first_point_cloud = true;
-    if (occupied_voxels_.size() > 0)
-    {
-        is_first_point_cloud = false;
-        LOG(INFO) << "Not first !";
-
-    }
+    
+#ifdef DEBUG
+    // 检查一下当前_voxel_map 和 _bbx_voxel_map 的大小
+    LOG(ERROR) << "current _voxel_map getNumLeafNodes: " << _voxel_map.getNumLeafNodes();
+    LOG(ERROR) << "current _bbx_voxel_map getNumLeafNodes: " << _bbx_voxel_map.getNumLeafNodes();
+#endif
+    
 
     // 1. 根据点云更新 voxel_map _bbx_voxel_map
-    // 如果 当前帧为第一帧，bbx进行初始化拓展
-    if (is_first_point_cloud)
+    // 添加以往帧的 occupied 体素
+    for (size_t i = 0; i < occupied_voxels_.size(); i++)
     {
-        for (size_t i = 0; i < cloud->size(); ++i)
-        {
+        octomap::point3d point(occupied_voxels_[i][0], occupied_voxels_[i][1], occupied_voxels_[i][2]);
+        voxel_map.updateNode(point, true);
+        voxel_map.search(point)->setColor(0, 0, 255);
+    }
+    LOG(INFO) << "past point cloud get occupancy node done" ;
+    LOG(INFO) << "past octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
 
-            octomap::point3d point(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    // 添加当前帧的 occupied 体素
+    for (size_t i = 0; i < cloud->size(); i++)
+    {
 
-            voxel_map.updateNode(point, true);
-            voxel_map.search(point)->setColor(0, 0, 255);
-        }
+        octomap::point3d point(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
 
-        LOG(INFO) << "Add point cloud done!" ;
-        LOG(INFO) << "Current occupied voxel_map size : " << voxel_map.getNumLeafNodes();
+        _bbx_voxel_map.updateNode(point, true);
+        _bbx_voxel_map.search(point)->setColor(0, 0, 255);
 
+        voxel_map.updateNode(point, true);
+        voxel_map.search(point)->setColor(0, 0, 255);
+    }
+
+    LOG(INFO) << "current point cloud get occupancy node done" ;
+    LOG(INFO) << "current octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
+
+
+    // 2. 如果 当前帧为第一帧，bbx进行初始化拓展
+    if (is_first)
+    {
         // 更新bbx_unknown_min_ 和 bbx_unknown_max_
         voxel_map.getMetricMin(bbx_unknown_min_[0], bbx_unknown_min_[1],  bbx_unknown_min_[2]);       
         voxel_map.getMetricMax(bbx_unknown_max_[0], bbx_unknown_max_[1], bbx_unknown_max_[2]);
-
-        double expand_ratio = 2.0;
-        Eigen::Vector3d bbx_center = (bbx_unknown_min_ + bbx_unknown_max_) / 2;
-        Eigen::Vector3d bbx_size = bbx_unknown_max_ - bbx_unknown_min_;
-        bbx_unknown_min_ = bbx_center - expand_ratio * bbx_size / 2;
-        bbx_unknown_max_ = bbx_center + expand_ratio * bbx_size / 2;
-
-        // 重置 voxel_map 的 bbx
-        voxel_map.setBBXMin(to_oct3d(bbx_unknown_min_));
-        voxel_map.setBBXMax(to_oct3d(bbx_unknown_max_));
-
-    }else{
-        voxel_map.setBBXMin(to_oct3d(bbx_unknown_min_));
-        voxel_map.setBBXMax(to_oct3d(bbx_unknown_max_));
+        // 计算当前camera_pose下的z轴，为bbx扩展的方向
+        Eigen::Vector3d z_axis = camera_pose.block<3,1>(0,2);
+        // 计算bounding box的长度，并扩展为alpha倍
+        Eigen::Vector3d bbx_length = (bbx_unknown_max_ - bbx_unknown_min_);
+        Eigen::Vector3d extended_length = bbx_length * 0.5;
+        // 计算扩展后的bbx
+        if (z_axis[0] > 0)
+        {
+            bbx_unknown_max_[0] = bbx_unknown_max_[0] + extended_length[0];
+        }else{
+            bbx_unknown_min_[0] = bbx_unknown_min_[0] - extended_length[0];
+        }
+        if (z_axis[1] > 0)
+        {
+            bbx_unknown_max_[1] = bbx_unknown_max_[1] + extended_length[1];
+        }else{
+            bbx_unknown_min_[1] = bbx_unknown_min_[1] - extended_length[1];
+        }
+        if (z_axis[2] > 0)
+        {
+            bbx_unknown_max_[2] = bbx_unknown_max_[2] + extended_length[2];
+        }else{
+            bbx_unknown_min_[2] = bbx_unknown_min_[2] - extended_length[2];
+        }
     }
 
-    LOG(INFO) << "Update voxel_map bbx done" ;
 
-    // 插入全新的点
+    // 3. 重设置 voxel_map 
+    // 3.1 重置边界
+    // 边界为在上一帧中计算得出的 bbx_unknown_min_ 和 bbx_unknown_max_ 与 添加了当前帧的点云的 并集 bbx
+    _bbx_voxel_map.getMetricMax(bbx_unknown_max_[0], bbx_unknown_max_[1], bbx_unknown_max_[2]);
+    _bbx_voxel_map.getMetricMin(bbx_unknown_min_[0], bbx_unknown_min_[1], bbx_unknown_min_[2]);
+    voxel_map.setBBXMin(to_oct3d(bbx_unknown_min_));
+    voxel_map.setBBXMax(to_oct3d(bbx_unknown_max_));
     for (double x = bbx_unknown_min_[0]; x < bbx_unknown_max_[0]; x += voxel_resolution_ )
     {
         for (double y = bbx_unknown_min_[1]; y < bbx_unknown_max_[1]; y += voxel_resolution_)
@@ -99,78 +143,78 @@ update_voxel_map(
                 octomap::point3d start(x, y, z);
                 octomap::point3d end(x + voxel_resolution_, y + voxel_resolution_, z + voxel_resolution_);
                 voxel_map.insertRay(start, end);
+                if (is_first)
+                {
+                    // 如果是第一帧，把_voxel_map也重置
+                    _voxel_map.insertRay(start, end);
+                }
+                
             }
         }
     }
 
-    // 重置 voxel 类型
+    // 3.2 重置 voxel 类型
     // 更新voxel_map的所有的点的颜色为黑色 表示未扫描到的点
+    occupied_voxels_.resize(voxel_map.getNumLeafNodes());
     #pragma omp parallel for
     for(size_t i = 0; i < voxel_map.getNumLeafNodes(); ++i){
         octomap::ColorOcTree::leaf_iterator voxel_map_it = voxel_map.begin_leafs();
         std::advance(voxel_map_it, i);
         auto color = voxel_map_it->getColor();
-        if (color.b != 255 && color.g != 188 && color.r != 255)
+        if (color.r == 0 && color.g == 0 && color.b == 255)
         {
+            occupied_voxels_[i] = (Eigen::Vector3d(voxel_map_it.getX(), voxel_map_it.getY(), voxel_map_it.getZ()));
+        }else{
             voxel_map_it->setColor(0, 0, 0);
+            occupied_voxels_[i] = (Eigen::Vector3d(0, 0, 0));
         }
     }
     voxel_map.updateInnerOccupancy();
+    // 清除occupied_voxels_中全是0的点
+    occupied_voxels_.erase(std::remove(occupied_voxels_.begin(), occupied_voxels_.end(), Eigen::Vector3d(0, 0, 0)), occupied_voxels_.end());
 
-    // 添加 以往的体素点
-    if(!is_first_point_cloud){
+    LOG(INFO) << "reset voxel_map bbx done" ;
+    LOG(INFO) << "current octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
 
-        // for (size_t i = 0; i < unknown_voxels_.size(); ++i)
-        // {
-        //     octomap::point3d point(unknown_voxels_[i][0], unknown_voxels_[i][1], unknown_voxels_[i][2]);
-        //     voxel_map.updateNode(point, true);
-        //     voxel_map.search(point)->setColor(188, 188, 188);
-        // }
-
-        // for (size_t i = 0; i < frontier_voxels_.size(); ++i)
-        // {
-        //     octomap::point3d point(frontier_voxels_[i][0], frontier_voxels_[i][1], frontier_voxels_[i][2]);
-        //     voxel_map.updateNode(point, true);
-        //     voxel_map.search(point)->setColor(255, 0, 0);
-        // }
-
-        for (size_t i = 0; i < free_voxels_.size(); ++i)
-        {
-            octomap::point3d point(free_voxels_[i][0], free_voxels_[i][1], free_voxels_[i][2]);
-            voxel_map.updateNode(point, true);
-            voxel_map.search(point)->setColor(255, 255, 255);
+    // 如果是第一帧，把_voxel_map的颜色也重置
+    if (is_first)
+    {
+        #pragma omp parallel for
+        for(size_t i = 0; i < _voxel_map.getNumLeafNodes(); ++i){
+            octomap::ColorOcTree::leaf_iterator _voxel_map_it = _voxel_map.begin_leafs();
+            std::advance(_voxel_map_it, i);
+            _voxel_map_it->setColor(0, 0, 0);
         }
-
-        for (size_t i = 0; i < occupied_voxels_.size(); ++i)
-        {
-            octomap::point3d point(occupied_voxels_[i][0], occupied_voxels_[i][1], occupied_voxels_[i][2]);
-            voxel_map.updateNode(point, true);
-            voxel_map.search(point)->setColor(0, 0, 255);
-        }
-
-        // 添加当前帧的 occupied 体素
-        if (cloud->size() == 0)
-        {
-            LOG(WARNING) << "cloud is empty";
-            return voxel_map;
-        }
-
-        for (size_t i = 0; i < cloud->size(); ++i)
-        {
-
-            octomap::point3d point(cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-
-            voxel_map.updateNode(point, true);
-            voxel_map.search(point)->setColor(0, 0, 255);
-        }
+        _voxel_map.updateInnerOccupancy();
     }
 
-    voxel_map.updateInnerOccupancy();
+    // 如果不是第一帧，遍历_voxel_map的所有的节点，把_voxel_map的节点的颜色赋值给voxel_map
+    if (!is_first)
+    {
+        for(octomap::ColorOcTree::leaf_iterator it = _voxel_map.begin_leafs(), end=_voxel_map.end_leafs(); it!= end; ++it) {
+            auto voxel_map_it = voxel_map.search(it.getX(), it.getY(), it.getZ());
+            // 判断点是否在voxel_map中
+            if (voxel_map_it == nullptr)
+            {
+                continue;
+            }
+            auto voxel_map_color = voxel_map_it->getColor();
+            // 跳过占据体素
+            if (voxel_map_color.r == 0 && voxel_map_color.g == 0 && voxel_map_color.b == 255)
+            {
+                continue;
+            }
 
-    LOG(INFO) << "Updata voxel_map bbx done" ;
-    LOG(INFO) << "current voxel map with unseen: " << voxel_map.getNumLeafNodes();
+            auto color = it->getColor();
+            voxel_map.updateNode(it.getX(), it.getY(), it.getZ(), true);
+            voxel_map.search(it.getX(), it.getY(), it.getZ())->setColor(color.r, color.g, color.b);
+        }
+    }
+    
+    LOG(INFO) << "voxel map add old voxel done" ;
+    LOG(INFO) << "current octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
 
-    // 3. 使用光线追踪判断voxel_map被观察到的部分判断哪些voxel已经被扫描
+    // 3.3 使用光线追踪判断voxel_map被观察到的部分判断哪些voxel已经被扫描
     // 通过光线追踪判断voxel_map被观察到的部分判断哪些voxel已经被扫描
     // 以相机视锥的四个顶点为边界，以相机的光心的中心为起点，每隔一定距离就发射一条射线，计算光线与voxel_map的第一个交点
     // 换算frustum的坐标到相机的位姿
@@ -201,7 +245,7 @@ update_voxel_map(
     std::vector<octomap::point3d*> ray_end_vec(total_rays);
     std::vector<octomap::point3d*> ray_orign_vec(total_rays);
     // TODO 多线程时与单线程结果不一致
-    for(size_t k = 0; k < size_t(total_rays); ++k){
+    for(size_t k = 0; k < size_t(total_rays); k++){
         int i = k / num_vertical_rays;
         int j = k % num_vertical_rays;
 
@@ -241,7 +285,7 @@ update_voxel_map(
     
     std::vector<octomap::KeyRay*> ray_key_vec(total_rays);
     # pragma omp parallel for
-    for(int k = 0; k < total_rays; ++k){
+    for(int k = 0; k < total_rays; k++){
         
         // 初始化所有地址为空
         ray_key_vec[k] = nullptr;
@@ -304,11 +348,11 @@ update_voxel_map(
     }
         
     // 4. 计算当前视角下voxel_map的进行分类
-    for (size_t i = 0; i < ray_hit_voxels.size(); ++i)
+    for (size_t i = 0; i < ray_hit_voxels.size(); i++)
     {
         // 遍历每一条光线
         bool start_occupied = false;
-        for (size_t j = 0; j < ray_hit_voxels[i].size(); ++j)
+        for (size_t j = 0; j < ray_hit_voxels[i].size(); j++)
         {
             double x = ray_hit_voxels[i][j][0];
             double y = ray_hit_voxels[i][j][1];
@@ -322,24 +366,42 @@ update_voxel_map(
             
             auto voxel_map_color = voxel_map_it->getColor();
 
-            // 如果该点是占据点
-            if (voxel_map_color.r == 0 && voxel_map_color.g == 0 && voxel_map_color.b == 255)
-            {
-                start_occupied = true;
-            
-            }else{ // 如果在voxel_map中不是占据点
-                if (start_occupied)
+            if (voxel_map_it == nullptr)
+            {   
+                continue;
+                
+            }else{
+                // 如果该点是占据点
+                if (voxel_map_color.r == 0 && voxel_map_color.g == 0 && voxel_map_color.b == 255)
                 {
-                    // 所有点都是未知点 unknown
-                    // 如果该点不是 frontier 或者 free 或者 occupied
-                    // if (voxel_map_color.b != 255)
-                    // {
-                        voxel_map_it->setColor(188, 188, 188);
-                    // }
-                    
-                }else{
-                    // 所有点都是空闲点 free
-                    voxel_map_it->setColor(255, 255, 255);
+                    start_occupied = true;
+                
+                }else{ // 如果在voxel_map中不是占据点
+                    if (start_occupied)
+                    {
+                        auto _voxel_map_it = _voxel_map.search(x,y,z);
+                        octomap::ColorOcTreeNode::Color _voxel_map_color;
+                        // 且在_voxel_map中是占据点是froniter 或者是 未扫描到的点 或者是 未知点 或是不存在的点
+                        // 设置为未知点
+                        if (_voxel_map_it != nullptr)
+                        {
+                            _voxel_map_color = _voxel_map_it->getColor();
+                            if ((_voxel_map_color.r == 255 && _voxel_map_color.g == 255 && _voxel_map_color.b == 255)
+                                || (_voxel_map_color.r == 0 && _voxel_map_color.g == 0 && _voxel_map_color.b == 255))
+                            {
+                                voxel_map_it->setColor(_voxel_map_color.r, _voxel_map_color.g, _voxel_map_color.b);
+                                
+                            }else{
+                                voxel_map_it->setColor(188, 188, 188);
+                            }
+                        }else{
+                            voxel_map_it->setColor(188, 188, 188);
+                        }
+                        
+                    }else{
+                        // 当前点设置为empty
+                        voxel_map_it->setColor(255, 255, 255);
+                    }
                 }
             }
         }
@@ -352,18 +414,19 @@ update_voxel_map(
 
         if (color.r != 188 || color.g != 188 || color.b != 188)
         {   
+            
             continue;
         }
 
-        // 找到该点的邻域
+        // 找到该点的八个邻居
         std::vector<Eigen::Vector3d> neighbors = find_neighbors(it.getX(), it.getY(), it.getZ());
         
         // 判断该点是否是边界点
         bool is_frontier = false;
-        bool has_free_neighbor = false;
+        bool has_empty_neighbor = false;
         bool has_occupied_neighbor = false;
 
-        for (size_t i = 0; i < neighbors.size(); ++i)
+        for (size_t i = 0; i < neighbors.size(); i++)
         {   
             double x = neighbors[i][0];
             double y = neighbors[i][1];
@@ -375,10 +438,10 @@ update_voxel_map(
             }
             
             auto color = nb_it->getColor();
-            // 如果该点的邻居是free点
-            if (color.r == 255 && color.g == 255 && color.b == 255)
+            // 如果该点的邻居是未知点
+            if (color.r == 188 && color.g == 188 && color.b == 188)
             {
-                has_free_neighbor = true;
+                has_empty_neighbor = true;
                 continue;
             }
 
@@ -389,7 +452,7 @@ update_voxel_map(
                 continue;
             }
             
-            is_frontier = has_free_neighbor && has_occupied_neighbor;
+            is_frontier = has_empty_neighbor && has_occupied_neighbor;
             
             if(is_frontier){
                 // 设置该点的颜色为红色
@@ -400,80 +463,63 @@ update_voxel_map(
         }
     }
 
-    LOG(INFO) << "Voxel map classification done!" ;
-    LOG(INFO) << "Current classification voxel map size: " << voxel_map.getNumLeafNodes();
+    LOG(INFO) << "voxel map classification done" ;
+    LOG(INFO) << "current octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
 
     // 5. 根据新的frontier_voxels和occupied_voxel 重新更新 _bbx_voxel_map
+
+    // 5.1 更新全局的_voxel_map
+    // 遍历_voxel_map的所有的节点，把voxel_map的节点的颜色赋值给_voxel_map
+    for(octomap::ColorOcTree::leaf_iterator it = voxel_map.begin_leafs(), end=voxel_map.end_leafs(); it!= end; ++it) {
+        auto color = it->getColor();
+        _voxel_map.updateNode(it.getX(), it.getY(), it.getZ(), true);
+        _voxel_map.search(it.getX(), it.getY(), it.getZ())->setColor(color.r, color.g, color.b);
+    }
+    _voxel_map.updateInnerOccupancy();
+
+    _bbx_voxel_map.clear();
     // 遍历所有 Frontier 再次更新bbx的大小
     for (size_t i = 0; i < frontier_voxels.size(); ++i)
     {
         auto tmp_voxels = getSurroundingVoxels(frontier_voxels[i], surrounding_voxels_radius_);
-        for (size_t j = 0; j < tmp_voxels.size(); ++j)
+        for (size_t j = 0; j < tmp_voxels.size(); j++)
         {   
             octomap::point3d point(tmp_voxels[j][0], tmp_voxels[j][1], tmp_voxels[j][2]);
+            _bbx_voxel_map.updateNode(point, true);
             // 设置颜色为红色
-            auto it = voxel_map.search(point);
-            if (it == nullptr)
-            {
-                voxel_map.updateNode(point, true);
-                voxel_map.search(point)->setColor(255, 0, 0);
-            }else{
-                auto color = it->getColor();
-                // 如果该点既不是占据点也不是空闲点
-                if (color.b != 255)
-                {
-                    it->setColor(255, 0, 0);
-                }
-            }
+            _bbx_voxel_map.search(point)->setColor(255, 0, 0);
         }
     }
+    // 遍历所有的占据点
+    for (size_t i = 0; i < occupied_voxels_.size(); i++)
+    {
+        octomap::point3d point(occupied_voxels_[i][0], occupied_voxels_[i][1], occupied_voxels_[i][2]);
+        _bbx_voxel_map.updateNode(point, true);
+        _bbx_voxel_map.search(point)->setColor(0, 0, 255);
+    }
+    _bbx_voxel_map.updateInnerOccupancy();
 
+    //  更新bbx_unknown_min_ 和 bbx_unknown_max_
+    _bbx_voxel_map.getMetricMin(bbx_unknown_min_[0], bbx_unknown_min_[1], bbx_unknown_min_[2]);
+    _bbx_voxel_map.getMetricMax(bbx_unknown_max_[0], bbx_unknown_max_[1], bbx_unknown_max_[2]);
+
+    clearOutsideBBX(voxel_map, to_oct3d(bbx_unknown_min_), to_oct3d(bbx_unknown_max_));
+    voxel_map.setBBXMin(to_oct3d(bbx_unknown_min_));
+    voxel_map.setBBXMax(to_oct3d(bbx_unknown_max_));
     voxel_map.updateInnerOccupancy();
-
-
-    // 6. 更新全局的 体素结构信息
-    // 从 voxel_map 提取出 occupied_voxels 和 frontier_voxels
-    occupied_voxels_.clear();
-    frontier_voxels_.clear();
-    free_voxels_.clear();
-    unknown_voxels_.clear();
-
-    #pragma omp parallel for
-    for(size_t i = 0; i < voxel_map.getNumLeafNodes(); ++i){
-        octomap::ColorOcTree::leaf_iterator voxel_map_it = voxel_map.begin_leafs();
-        std::advance(voxel_map_it, i);
-        auto color = voxel_map_it->getColor();
-        if (color.b == 255 && color.r == 0 && color.g == 0)
-        {
-            #pragma omp critical
-            occupied_voxels_.push_back(Eigen::Vector3d(voxel_map_it.getX(), voxel_map_it.getY(), voxel_map_it.getZ()));
-
-        }else if (color.b == 0 && color.r == 255 && color.g == 0)
-        {
-            #pragma omp critical
-            frontier_voxels_.push_back(Eigen::Vector3d(voxel_map_it.getX(), voxel_map_it.getY(), voxel_map_it.getZ()));
-        }else if (color.b == 0 && color.r == 0 && color.g == 0)
-        {
-            #pragma omp critical
-            free_voxels_.push_back(Eigen::Vector3d(voxel_map_it.getX(), voxel_map_it.getY(), voxel_map_it.getZ()));
-        }else if (color.b == 188 && color.r == 188 && color.g == 188)
-        {
-            #pragma omp critical
-            unknown_voxels_.push_back(Eigen::Vector3d(voxel_map_it.getX(), voxel_map_it.getY(), voxel_map_it.getZ()));
-        }
-    }
 
     LOG(INFO) << "voxel map expand bbx done" ;
     LOG(INFO) << "current octomap getNumLeafNodes: " << voxel_map.getNumLeafNodes();
-
+    
     output_frontier_voxels = frontier_voxels;
     output_occupied_voxels = occupied_voxels_;
 
-    bbx_unknown_max = bbx_unknown_max_;
     bbx_unknown_min = bbx_unknown_min_;
+    bbx_unknown_max = bbx_unknown_max_;
 
     return voxel_map;
 }
+
 
 bool voxelstruct::
 computeRayBoxIntersection(
@@ -601,7 +647,7 @@ voxelstruct::ray_travel(const Eigen::Vector3d ray_start, const Eigen::Vector3d r
 
     std::vector<Eigen::Vector3d> visited_voxels_resolution_;
 
-    for(size_t i = 0; i < visited_voxels.size(); ++i){
+    for(size_t i = 0; i < visited_voxels.size(); i++){
         Eigen::Vector3d tmp(visited_voxels[i][0] * _bin_size,
                             visited_voxels[i][1] * _bin_size,
                             visited_voxels[i][2] * _bin_size);
@@ -649,15 +695,12 @@ std::vector<Eigen::Vector3d> voxelstruct::
 getSurroundingVoxels(const Eigen::Vector3d& voxel, int r) {
     std::vector<Eigen::Vector3d> surrounding_voxels;
 
-    for (int i = -r; i <= r; ++i) {
-        for (int j = -r; j <= r; ++j) {
-            for (int k = -r; k <= r; ++k) {
-                if (i == 0 && j == 0 && k == 0) {
-                    continue;
-                }
-                surrounding_voxels.push_back(Eigen::Vector3d(voxel[0] + i * voxel_resolution_,
-                                                             voxel[1] + j * voxel_resolution_,
-                                                             voxel[2] + k * voxel_resolution_));
+    double step = r*voxel_resolution_;
+
+    for (double x = voxel[0] - step; x <= voxel[0] + step; x += voxel_resolution_) {
+        for (double y = voxel[1] - step; y <= voxel[1] + step; y += voxel_resolution_) {
+            for (double z = voxel[2] - step; z <= voxel[2] + step; z += voxel_resolution_) {
+                surrounding_voxels.push_back(Eigen::Vector3d(x, y, z));
             }
         }
     }

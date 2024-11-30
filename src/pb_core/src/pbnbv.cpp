@@ -53,6 +53,8 @@ int pbnbv::execute(Eigen::Matrix4d & nbv)
         current_occupied_voxels,
         bbx_unknown_min,
         bbx_unknown_max);
+
+    this->voxel_map_size_ = voxel_map.getNumLeafNodes();
     LOG(INFO) << "voxel_map size: " << voxel_map.getNumLeafNodes();
 
     LOG (INFO) << "compute_next_view : ";
@@ -77,6 +79,7 @@ int pbnbv::execute(Eigen::Matrix4d & nbv)
     // time_file << std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t1).count() << "\r\n";
     // time_file.close();
 
+    this->ellipsoid_size_ = ns.get_ellipsoids().size();
     vs.catpure_frame(nbv, ns.get_ellipsoids(), voxel_map, bbx_unknown_min, bbx_unknown_max);
     
     if (res == 1){

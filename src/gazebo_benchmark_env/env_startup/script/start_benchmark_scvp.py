@@ -200,7 +200,7 @@ if __name__ == '__main__':
                     pose = rospy.wait_for_message(pose_topic, Pose)
                     key_time = time.time()
                     nbv_matrix = pose_to_matrix(pose)
-
+                    
                     # 新建txt文件保存 NBV 位姿
                     pose_file = iter_folder + "/nbv_pose.txt"
                     with open(pose_file, "w") as f:

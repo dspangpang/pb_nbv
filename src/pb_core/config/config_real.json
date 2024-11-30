@@ -32,7 +32,6 @@
         [0, 0, -0.04]
     ],
     "max_gmm_cluster_num": 50,
-    "min_gmm_cluster_num": 5,
     "save_nbv_tmp_data": false,
 
     "__part__4": "数据可视化部分参数",
