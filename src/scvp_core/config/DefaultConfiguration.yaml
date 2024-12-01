@@ -2,7 +2,7 @@
 model_path: "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/"
 nbv_net_path: "/root/work_place/pb_nbv/src/scvp_core/nbv-net"
 sc_net_path: "/root/work_place/pb_nbv/src/scvp_core/sc-net"
-name_of_pcd: stanford_models/pcd/obj_000005
+name_of_pcd: hb_models/pcd/obj_000016
 method_of_IG: 7
 octomap_resolution: 0.006
 ground_truth_resolution: 0.01

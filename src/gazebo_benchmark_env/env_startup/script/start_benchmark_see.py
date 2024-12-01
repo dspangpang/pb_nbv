@@ -21,6 +21,7 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, matrix_to_pose, gazebo_pose_to_tf, parse_pointcloud2, read_rho_from_launch, modify_tho_launch_file, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
+# model_dir = ["hb_models"]
 method_type = ["see"]
 see_config_file = "/root/work_place/pb_nbv/src/see_core/launch/run_see.launch"
 default_rho = 1500000
@@ -108,6 +109,9 @@ if __name__ == '__main__':
 
     # 设置模型的初始位置
     model_pose_str = "0 0 0 0 0 0 1"
+
+    # # 从键盘中读取后开始
+    # input("Press Enter to start the benchmark...")
 
     # 遍历所有模型
     for model_type in model_dir:
@@ -311,7 +315,7 @@ if __name__ == '__main__':
                     point_cloud_data = rospy.wait_for_message("/d435/depth/color/points", PointCloud2)
                     # 把当前的realsense相机四元数位姿转换成4x4矩阵
                     camera_pose = quaternion_to_matrix(position, orientation)
-                    camera_pose = save_point_cloud(point_cloud_data, camera_pose, iter_folder)
+                    camera_pose = save_point_cloud(point_cloud_data, camera_pose, iter_folder, 0.001)
                     if camera_pose is None:
                         rospy.logerr("Failed to save point cloud data!")
                         exit(-1)

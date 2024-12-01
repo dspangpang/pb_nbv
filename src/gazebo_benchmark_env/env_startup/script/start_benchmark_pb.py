@@ -18,7 +18,8 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, matrix_to_pose, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
-method_type = ["pb-1-5-0.9,0,0", "pb-1-40-0.9,0,0", "pb-2-10-0.9,0,0", "pb-4-10-0.9,0,0", "pb-8-10-0.9,0,0", "pb-4-10-0,0.9,0", "pb-4-10-0,0,0.9", "pb-4-10-0,0.636,0.636"]
+# model_dir = ["hb_models"]
+method_type = ["pb-4-10-0.9,0,0"]
 pb_config_file = "/root/work_place/pb_nbv/src/pb_core/config/config.json"
 
 if __name__ == '__main__':
@@ -32,6 +33,9 @@ if __name__ == '__main__':
     subprocess.Popen(command)
 
     time.sleep(2)
+
+    # # 从键盘中读取后开始
+    # input("Press Enter to start the benchmark...")
 
     # 初始化节点
     rospy.init_node('start_benchmark')
@@ -219,7 +223,7 @@ if __name__ == '__main__':
                             point_cloud_data = rospy.wait_for_message("/d435/depth/color/points", PointCloud2)
                             # 把当前的realsense相机四元数位姿转换成4x4矩阵
                             camera_pose = quaternion_to_matrix(position, orientation)
-                            camera_pose = save_point_cloud(point_cloud_data, camera_pose, iter_folder)
+                            camera_pose = save_point_cloud(point_cloud_data, camera_pose, iter_folder, 0.001)
                             if camera_pose is None:
                                 rospy.logerr("Failed to save point cloud data!")
                                 exit(-1)

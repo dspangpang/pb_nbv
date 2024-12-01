@@ -18,6 +18,7 @@ from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, base_to_depth, nbv_iter
 
 model_dir = ["hb_models", "lm_models", "stanford_models"]
+# model_dir = ["hb_models"]
 method_type = ["nbvnet"]
 scvp_config_file = "/root/work_place/pb_nbv/src/scvp_core/config/DefaultConfiguration.yaml"
 
@@ -38,6 +39,9 @@ if __name__ == '__main__':
     subprocess.Popen(command)
 
     time.sleep(2)
+
+    # # 从键盘中读取后开始
+    # input("Press Enter to start the benchmark...")
 
     # 初始化节点
     rospy.init_node('start_benchmark')

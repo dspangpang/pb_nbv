@@ -7,7 +7,7 @@ import math
 from utils import nbv_iter
 import sys
 
-data_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/comparison"
+data_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/video"
 model_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models"
 
 print("Data dir: ", data_dir)
