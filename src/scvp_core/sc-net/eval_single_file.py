@@ -14,6 +14,10 @@ import os
 import time
 from scipy.ndimage import zoom
 
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+
 # device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
 
@@ -21,8 +25,8 @@ device = torch.device('cpu')
 # batch_size = 64
 # num_epochs = 500
 
-log_cache_path = '/root/work_place/pb_nbv/src/scvp_core/sc-net/log/'
-data_cache_path = '/root/work_place/pb_nbv/src/scvp_core/sc-net/data/'
+log_cache_path = f'{work_dir}src/scvp_core/sc-net/log/'
+data_cache_path = f'{work_dir}src/scvp_core/sc-net/data/'
 # 创建文件夹
 os.makedirs(log_cache_path, exist_ok=True)
 os.makedirs(data_cache_path, exist_ok=True)
@@ -58,7 +62,7 @@ def eval(datapath):
     model = MyNBVNetV3()
     model = model.to(device)
 
-    checkpoint = torch.load('/root/work_place/pb_nbv/src/scvp_core/sc-net/pt/last.pth.tar',map_location = torch.device('cpu'), weights_only=True)
+    checkpoint = torch.load(f'{work_dir}src/scvp_core/sc-net/pt/last.pth.tar',map_location = torch.device('cpu'), weights_only=True)
     model.load_state_dict(checkpoint['state_dict'])
 
     print('EVALUATING')

@@ -1105,6 +1105,15 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "scvp_publisher");
     ros::NodeHandle nh;
     pose_pub = nh.advertise<geometry_msgs::Pose>("/scvp_pose", 10);
+
+	// 从环境变量中提取 work_dir
+    std::string work_dir = std::getenv("WORK_DIR");
+    if (work_dir.empty())
+    {
+        std::cout << "WORK_DIR is not set !" << std::endl;
+        return -1;
+    }
+
 #endif
 	//Init
 	ios::sync_with_stdio(false);
@@ -1112,7 +1121,7 @@ int main(int argc, char** argv)
 	if (mode == DebugOne)
 	{
 		//数据区初始化
-		share_data = new Share_Data("/root/work_place/pb_nbv/src/scvp_core/config/DefaultConfiguration.yaml");
+		share_data = new Share_Data(work_dir + "src/scvp_core/config/DefaultConfiguration.yaml");
 		//控制台读取指令线程
 		thread cmd(get_command);
 		//NBV系统运行线程

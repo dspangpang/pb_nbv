@@ -2,7 +2,14 @@
 
 visualization::visualization():viz_("viz_visualization"){
 
-    std::string config_file_path = "/root/work_place/pb_nbv/src/pb_core/config/config.json";
+    // 从环境变量中提取 work_dir
+    std::string work_dir = std::getenv("WORK_DIR");
+    if (work_dir.empty())
+    {
+        LOG(ERROR) << "WORK_DIR is not set !";
+    }
+
+    std::string config_file_path = work_dir + "src/pb_core/config/config.json";
 
     set_close_flag(true);
     set_update_flag(false);

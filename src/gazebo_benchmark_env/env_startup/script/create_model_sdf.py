@@ -4,13 +4,17 @@ import trimesh
 import numpy as np
 
 model_pkg = "stanford_models"
-rescale = True
+rescale = False
 
-ply_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/models"
-scale_ply_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/scale_models"
-dae_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/dae"
-sdf_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/sdf"
-pcd_directory = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_pkg}/pcd"
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+ply_directory = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_pkg}/models"
+scale_ply_directory = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_pkg}/scale_models"
+dae_directory = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_pkg}/dae"
+sdf_directory = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_pkg}/sdf"
+pcd_directory = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_pkg}/pcd"
+realsense_sdf_path = f"{work_dir}src/gazebo_benchmark_env/realsense_ros_gazebo/urdf/d435.sdf"
 
 def create_sdf_content(model_name):
     sdf_content = f"""<?xml version="1.0" ?>
@@ -208,7 +212,19 @@ def convert_ply_to_pcd(ply_directory, pcd_directory):
 
                 print(f"Converted {filename} to {model_name}.pcd")
 
+def modify_realsense_sdf():
+    with open(realsense_sdf_path, "r") as f:
+        lines = f.readlines()
+
+    # 修改文件第 44 行的内容 为新的 uri
+    new_uri = f"            <uri>{work_dir}src/gazebo_benchmark_env/realsense_ros_gazebo/meshes/realsense_d435.stl</uri>"
+    lines[43] = new_uri + "\n"
+
+    with open(realsense_sdf_path, "w") as f:
+        f.writelines(lines)
+
 if __name__ == "__main__":
     convert_ply_to_dae(ply_directory, dae_directory)
     convert_ply_to_sdf(ply_directory, sdf_directory)
     convert_ply_to_pcd(ply_directory, pcd_directory)
+    modify_realsense_sdf()

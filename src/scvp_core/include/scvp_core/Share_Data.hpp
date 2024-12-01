@@ -349,7 +349,13 @@ public:
 		cloud_final = temp;
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr temp_gt(new pcl::PointCloud<pcl::PointXYZRGB>);
 		cloud_ground_truth = temp_gt;
-		save_path = "/root/work_place/pb_nbv/src/scvp_core/cache/" + name_of_pcd + '_' + to_string(method_of_IG);
+		// 从环境变量中提取 work_dir
+		std::string work_dir = std::getenv("WORK_DIR");
+		if (work_dir.empty())
+		{
+			std::cout << "WORK_DIR is not set !" << std::endl;
+		}
+		save_path = work_dir + "src/scvp_core/cache/" + name_of_pcd + '_' + to_string(method_of_IG);
 		if (move_cost_on == true) save_path += '_' + to_string(move_weight);
 		cout << "pcd and yaml files readed." << endl;
 		cout << "save_path is: " << save_path << endl;

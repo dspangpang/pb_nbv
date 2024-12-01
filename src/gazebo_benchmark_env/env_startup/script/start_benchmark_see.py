@@ -20,10 +20,13 @@ from add_realsense_gazebo import spawn_realsense
 from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, matrix_to_pose, gazebo_pose_to_tf, parse_pointcloud2, read_rho_from_launch, modify_tho_launch_file, base_to_depth, nbv_iter
 
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 # model_dir = ["hb_models"]
 method_type = ["see"]
-see_config_file = "/root/work_place/pb_nbv/src/see_core/launch/run_see.launch"
+see_config_file = f"{work_dir}src/see_core/launch/run_see.launch"
 default_rho = 1500000
 # 最小迭代次数
 min_iter = 10
@@ -84,7 +87,7 @@ if __name__ == '__main__':
     print("Start benchmarking...")
     
     # 结果文件夹路径
-    res_data = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/"
+    res_data = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/"
 
     # 修改模型的位置参数
     position = [-1.0, 0.0, 0.0]
@@ -116,7 +119,7 @@ if __name__ == '__main__':
     # 遍历所有模型
     for model_type in model_dir:
         # 读取模型文件
-        model_file_path = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
+        model_file_path = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
         # 在 model_file_path 中读取所有模型文件
         model_files = os.listdir(model_file_path)
         print("Current model type: ", model_type)

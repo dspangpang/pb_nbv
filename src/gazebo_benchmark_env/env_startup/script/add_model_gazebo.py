@@ -5,6 +5,10 @@ from gazebo_msgs.srv import SpawnModel, SpawnModelRequest
 from geometry_msgs.msg import Pose
 from gazebo_msgs.srv import DeleteModel, DeleteModelRequest
 import sys
+import os
+
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
 
 def spawn_model(model_file_path, model_name, model_pose, model_ref_frame):
     rospy.wait_for_service('/gazebo/spawn_sdf_model')
@@ -55,7 +59,7 @@ if __name__ == "__main__":
     
     model_type = "stanford_models"
     model_cnt = "1"
-    model_file_path =f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/{model_type}/sdf/obj_00000{model_cnt}.sdf"
+    model_file_path =f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_type}/sdf/obj_00000{model_cnt}.sdf"
 
     # 解析模型姿态
     pose_values = list(map(float, model_pose_str.split()))

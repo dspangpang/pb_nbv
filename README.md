@@ -1,5 +1,7 @@
 # Projection-Based NBV planing Framework
 
+## Overview
+
 ## dependence
 
 * Install Ros
@@ -17,5 +19,5 @@
     * pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
     * pip install open3d trimehs pycollada
 * Tips
-    * 当linux 环境提示线程不足时 sysctl -w vm.max_map_count=11262144 
+    * 当 运行 mcmf linux 环境提示线程不足时 使用 sysctl -w vm.max_map_count=11262144 
     

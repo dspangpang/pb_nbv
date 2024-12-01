@@ -187,13 +187,6 @@ add_executable(${PROJECT_NAME}_node
   src/visualization.cpp
   src/pbnbv.cpp)
 
-add_executable(demo_node 
-  nodes/demo.cpp
-  src/voxelstruct.cpp
-  src/nbvstrategy.cpp
-  src/visualization.cpp
-  src/pbnbv.cpp)
-
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -206,14 +199,6 @@ add_executable(demo_node
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node
-  ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  ${OCTOMAP_LIBRARIES}
-  jsoncpp_lib
-  glog::glog
-)
-target_link_libraries(demo_node
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
   ${OpenCV_LIBRARIES}

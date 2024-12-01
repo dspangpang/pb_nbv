@@ -6,7 +6,6 @@ import os
 from scipy.spatial.transform import Rotation as R
 import xml.etree.ElementTree as ET
 
-
 import rospy
 from geometry_msgs.msg import Pose
 import sensor_msgs.point_cloud2 as pc2
@@ -22,6 +21,9 @@ base_to_depth = np.linalg.inv(np.array([[ 0.00000000e+00, -1.00000000e+00,  0.00
                           [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]]))
 
 nbv_iter = 10
+
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
 
 def quaternion_to_matrix(position, quaternion):
     # 使用scipy库将四元数转换为旋转矩阵
@@ -188,6 +190,6 @@ def modify_tho_launch_file(file_path, data):
 
 
 if __name__ == "__main__":
-    launch_file_path = '/root/work_place/pb_nbv/src/see_core/launch/run_see.launch'
+    launch_file_path = f'{work_dir}src/see_core/launch/run_see.launch'
     data = read_rho_from_launch(launch_file_path)
     print(data)

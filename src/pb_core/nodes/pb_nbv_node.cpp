@@ -112,8 +112,15 @@ int main(int argc, char **argv){
     // 初始化Glog
     google::InitGoogleLogging(argv[0]);
 
+    // 从环境变量中提取 work_dir
+    std::string work_dir = std::getenv("WORK_DIR");
+    if (work_dir.empty())
+    {
+        LOG(ERROR) << "WORK_DIR is not set !";
+        return -1;
+    }
     // 设置日志的输出文件
-    google::SetLogDestination(google::INFO, "/root/work_place/pb_nbv/src/pb_core/log/");
+    google::SetLogDestination(google::INFO, (work_dir + "src/pb_core/log/").c_str());
     
     // 设置日志的输出级别
     FLAGS_stderrthreshold = google::INFO;

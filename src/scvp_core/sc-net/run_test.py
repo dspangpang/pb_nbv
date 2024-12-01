@@ -7,8 +7,11 @@ import torch
 import time
 from scipy.ndimage import zoom
 
-data_cache_path = '/root/work_place/pb_nbv/src/scvp_core/sc-net/data/'
-log_cache_path = '/root/work_place/pb_nbv/src/scvp_core/sc-net/log/'
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+data_cache_path = f'{work_dir}src/scvp_core/sc-net/data/'
+log_cache_path = f'{work_dir}src/scvp_core/sc-net/log/'
 
 model = str(sys.argv[1])
 
@@ -23,7 +26,7 @@ os.system('rm -rf '+log_cache_path+"*")
 print('testing ' + model)
 while not os.path.isfile(os.path.join(data_cache_path, model + '.txt')):
     pass
-os.system('python3 /root/work_place/pb_nbv/src/scvp_core/sc-net/eval_single_file.py ' + model)
+os.system(f'python3 {work_dir}src/scvp_core/sc-net/eval_single_file.py ' + model)
 with open(log_cache_path + '/ready.txt', 'a') as f:
     f.close()
 print('testing ' + model + ' over.')

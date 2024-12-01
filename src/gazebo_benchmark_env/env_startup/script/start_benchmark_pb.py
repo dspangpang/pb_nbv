@@ -17,10 +17,13 @@ from add_realsense_gazebo import spawn_realsense
 from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, matrix_to_pose, base_to_depth, nbv_iter
 
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 # model_dir = ["hb_models"]
 method_type = ["pb-4-10-0.9,0,0"]
-pb_config_file = "/root/work_place/pb_nbv/src/pb_core/config/config.json"
+pb_config_file = f"{work_dir}src/pb_core/config/config.json"
 
 if __name__ == '__main__':
 
@@ -41,7 +44,7 @@ if __name__ == '__main__':
     rospy.init_node('start_benchmark')
 
     # 结果文件夹路径
-    res_data = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/"
+    res_data = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/"
 
     # 修改模型的位置参数
     position = [-1.0, 0.0, 0.0]
@@ -70,7 +73,7 @@ if __name__ == '__main__':
     # 遍历所有模型
     for model_type in model_dir:
         # 读取模型文件
-        model_file_path = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
+        model_file_path = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
         # 在 model_file_path 中读取所有模型文件
         model_files = os.listdir(model_file_path)
         # 遍历所有算法

@@ -5,7 +5,10 @@ import numpy as np
 import open3d as o3d
 import math
 
-current_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/arealdata"
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+current_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/arealdata"
 
 point_cloud_num_total = []
 time_total = []

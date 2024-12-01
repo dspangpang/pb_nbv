@@ -4,6 +4,10 @@ import rospy
 from gazebo_msgs.srv import SpawnModel, SpawnModelRequest
 from geometry_msgs.msg import Pose
 import sys
+import os
+
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
 
 def spawn_realsense(model_pose):
 
@@ -16,7 +20,7 @@ def spawn_realsense(model_pose):
         spawn_model_service = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
         
         # 读取模型文件
-        model_file_path ="/root/work_place/pb_nbv/src/gazebo_benchmark_env/realsense_ros_gazebo/urdf/d435.sdf"
+        model_file_path =f"{work_dir}src/gazebo_benchmark_env/realsense_ros_gazebo/urdf/d435.sdf"
         with open(model_file_path, 'r') as model_file:
             model_xml = model_file.read()
 

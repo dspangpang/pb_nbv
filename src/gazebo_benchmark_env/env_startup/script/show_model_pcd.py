@@ -7,9 +7,12 @@ import time
 import threading
 import math
 
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
 model_name = "hb_models_see"
-current_dir = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/video/{model_name}/obj_000016"
-img_save_dir = f"/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/video/video_pcd_img"
+current_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/video/{model_name}/obj_000016"
+img_save_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/video/video_pcd_img"
 save_dir = img_save_dir + "/" + model_name
 camera_file = os.path.join(save_dir, "camera.json")
 

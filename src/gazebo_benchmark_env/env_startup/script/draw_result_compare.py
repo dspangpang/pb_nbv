@@ -7,8 +7,11 @@ import math
 from utils import nbv_iter
 import sys
 
-data_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/video"
-model_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models"
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/video"
+model_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/models"
 
 print("Data dir: ", data_dir)
 print("Model dir: ", model_dir)

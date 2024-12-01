@@ -17,10 +17,13 @@ from add_realsense_gazebo import spawn_realsense
 from set_link_state import set_model_state
 from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, pose_to_matrix, base_to_depth, nbv_iter
 
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 # model_dir = ["hb_models"]
 method_type = ["nbvnet"]
-scvp_config_file = "/root/work_place/pb_nbv/src/scvp_core/config/DefaultConfiguration.yaml"
+scvp_config_file = f"{work_dir}src/scvp_core/config/DefaultConfiguration.yaml"
 
 # 由于scvp的坐标系和gazebo相机的坐标系不同，所以需要一个矩阵进行转换
 camera_diff_matrix = np.array([[  0.0,  1.0,  0.0,  0.0],
@@ -50,7 +53,7 @@ if __name__ == '__main__':
     pcd_file_pub = rospy.Publisher('/benchmark/point_cloud_file', String, queue_size=10)
 
     # 结果文件夹路径
-    res_data = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/"
+    res_data = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/"
 
     # 修改模型的位置参数
     position = [-1.0, 0.0, 0.0]
@@ -79,7 +82,7 @@ if __name__ == '__main__':
     # 遍历所有模型
     for model_type in model_dir:
         # 读取模型文件
-        model_file_path = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
+        model_file_path = f"{work_dir}src/gazebo_benchmark_env/env_startup/models/" + model_type + "/sdf"
         # 在 model_file_path 中读取所有模型文件
         model_files = os.listdir(model_file_path)
         # 遍历所有算法
@@ -184,7 +187,7 @@ if __name__ == '__main__':
                 scvp_process = subprocess.Popen(command)
 
                 # 启动 nbv_net
-                command = ["python3", "/root/work_place/pb_nbv/src/scvp_core/nbv-net/run_single_test.py", pcd_name, str(nbv_iter)]
+                command = ["python3", f"{work_dir}src/scvp_core/nbv-net/run_single_test.py", pcd_name, str(nbv_iter)]
                 nbv_net_porcess = subprocess.Popen(command)
 
                 time.sleep(3)

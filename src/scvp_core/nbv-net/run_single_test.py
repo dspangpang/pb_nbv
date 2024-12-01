@@ -7,9 +7,12 @@ import numpy as np
 import time
 from scipy.ndimage import zoom
 
-pth_path = '/root/work_place/pb_nbv/src/scvp_core/nbv-net/my_checkpoint.pth.tar'
-data_cache_path = '/root/work_place/pb_nbv/src/scvp_core/nbv-net/data/'
-log_cache_path = '/root/work_place/pb_nbv/src/scvp_core/nbv-net/log/'
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+pth_path = f'{work_dir}src/scvp_core/nbv-net/my_checkpoint.pth.tar'
+data_cache_path = f'{work_dir}src/scvp_core/nbv-net/data/'
+log_cache_path = f'{work_dir}src/scvp_core/nbv-net/log/'
 
 model = str(sys.argv[1])
 

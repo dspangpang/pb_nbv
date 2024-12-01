@@ -6,9 +6,12 @@ import open3d as o3d
 import math
 from utils import nbv_iter
 import sys
+import os
 
-data_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/res_data/comparison"
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
 
+data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/comparison"
 
 def process_data(path, group):
     # 获取当前文件夹下的所有文件夹
@@ -80,8 +83,7 @@ def process_data(path, group):
 if __name__ == '__main__':
             
     print("Reading data...")
-
-
+    group = "pb-4-10-0.9,0,0"
     process_data(data_dir, group)
 
 

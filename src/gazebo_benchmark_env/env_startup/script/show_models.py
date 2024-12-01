@@ -2,7 +2,10 @@ import open3d as o3d
 import numpy as np
 import os
 
-model_dir = "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models"
+# 从环境变量中获取工作目录
+work_dir = os.environ['WORK_DIR']
+
+model_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/models"
 model_types = ["hb_models", "stanford_models", "lm_models"]
 model_size = "scale_models"
 model_total_num = 55
