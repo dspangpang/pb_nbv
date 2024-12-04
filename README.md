@@ -1,7 +1,7 @@
 # Projection-Based NBV planing Framework
 
 ## Overview
-* We propose a novel projection-based Next-Best-View (NBV) planning framework that aims to alleviate the high computational burden associated with existing algorithms due to the use of ray-casting.
+* We propose a novel projection-based Next-Best-View (NBV) planning framework that aims to alleviate the high computational burden associated with existing algorithms due to the use of ray-casting in the process of selecting the best viewpoint.
 
 ## Experiment platform
  (a) Real-world platform
@@ -9,13 +9,13 @@
 Simulation platform 
  (c) Simple environment just using a realsense.
 <figure class="half">
-    <img src="./imgs/Experimental_platform.png" width=300 height=200><img src="./imgs/Simulation_environment.png" width=300 height=200><img src="./imgs/Simulation_Comparison_platform.png" width=300 height=200>
+    <img src="./imgs/Experimental_platform.png" width=640 height=480>
+    <img src="./imgs/Simulation_environment.png" width=640 height=480>
+    <img src="./imgs/Simulation_Comparison_platform.png" width=640 height=480>
 </figure>
 
 ## Experiment Result
-<video width="640" height="480" controls>
-    <source src="./imgs/pb_nbv_video.mp4" type="video/mp4">
-</video>
+[[video](https://drive.google.com/file/d/1lPV5I1ZMPIsHmoNhYBfOYjhuEBrmAG3q/view?usp=sharing)]
 
 ## dependence
 * Install Ros
@@ -57,7 +57,9 @@ Coming soon
 3. Generate sdf file for gazebo
     * Please make sure that "hb_models", "lm_models" and "stanford_models" are in the correct directory.
     * ```python3 src/gazebo_benchmark_env/env_startup/script/create_model_sdf.py```
-4. Run script
+4. Compile ros workspace
+    * ```cd ${WORK_DIR} && catkin_make```
+5. Run script
     * (mcmf) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_mcmf.py``` 
     * (nbvnet) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_nbv_net.py```
     * (pb) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_pb.py```
