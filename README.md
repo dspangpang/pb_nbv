@@ -8,13 +8,9 @@
  (b) Similar to real-world platforms using a robotic arm, a turntable and a struct light 3D camera.
 Simulation platform 
  (c) Simple environment just using a realsense.
-<table>
-    <tr>
-        <td ><center><img src="./imgs/Experimental_platform.png" width=200 height=100> (a) Real-world platform </center></td>
-        <td ><center><img src="./imgs/Simulation_environment.png"  width=200 height=100> (b) Simulation platform </center></td>
-        <td ><center><img src="./imgs/Simulation_Comparison_platform.png"  width=200 height=100> (c) Simulation comparison platform</center></td>
-    </tr>
-</table>
+<figure class="half">
+    <img src="./imgs/Experimental_platform.png" width=220 height=150><img src="./imgs/Simulation_environment.png" width=220 height=150><img src="./imgs/Simulation_Comparison_platform.png" width=220 height=150>
+</figure>
 
 ## dependence
 * Install Ros
@@ -33,6 +29,8 @@ Simulation platform
     * ```pip install open3d trimehs pycollada```
 * Tips
     * When running mcmf in Linux environment and the system prompts that there are not enough threads, use ```sysctl -w vm.max_map_count=11262144```
+
+# Experiment Result
 
 ## How to use
 
