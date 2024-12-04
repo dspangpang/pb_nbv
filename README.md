@@ -3,21 +3,18 @@
 ## Overview
 * We propose a novel projection-based Next-Best-View (NBV) planning framework that aims to alleviate the high computational burden associated with existing algorithms due to the use of ray-casting.
 
-## Real-world platform
-Real-world platform: 
-
-![Real-world platform](./imgs/Experimental_platform.png)
-
-Real-world experiment result:
-
-## Simulation platform 
-Similar to real-world platforms using a robotic arm, a turntable and a struct light 3D camera.
-![Simulation_environment](./imgs/Simulation_environment.png)
-
-## Simulation Comparison platform 
-Simple environment just using a realsense.
-![Simulation_Comparison_platform](./imgs/Simulation_Comparison_platform.png)
-
+## Experiment platform
+ (a) Real-world platform
+ (b) Similar to real-world platforms using a robotic arm, a turntable and a struct light 3D camera.
+Simulation platform 
+ (c) Simple environment just using a realsense.
+<table>
+    <tr>
+        <td ><center><img src="./imgs/Experimental_platform.png" width=200 height=100> (a) Real-world platform </center></td>
+        <td ><center><img src="./imgs/Simulation_environment.png"  width=200 height=100> (b) Simulation platform </center></td>
+        <td ><center><img src="./imgs/Simulation_Comparison_platform.png"  width=200 height=100> (c) Simulation comparison platform</center></td>
+    </tr>
+</table>
 
 ## dependence
 * Install Ros
