@@ -35,8 +35,6 @@ Simulation platform
 * Tips
     * When running mcmf in Linux environment and the system prompts that there are not enough threads, use ```sysctl -w vm.max_map_count=11262144```
 
-# Experiment Result
-
 ## How to use
 
 ### Real-world platform
