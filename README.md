@@ -9,8 +9,13 @@
 Simulation platform 
  (c) Simple environment just using a realsense.
 <figure class="half">
-    <img src="./imgs/Experimental_platform.png" width=220 height=150><img src="./imgs/Simulation_environment.png" width=220 height=150><img src="./imgs/Simulation_Comparison_platform.png" width=220 height=150>
+    <img src="./imgs/Experimental_platform.png" width=300 height=200><img src="./imgs/Simulation_environment.png" width=300 height=200><img src="./imgs/Simulation_Comparison_platform.png" width=300 height=200>
 </figure>
+
+## Experiment Result
+<video width="640" height="480" controls>
+    <source src="./imgs/pb_nbv_video.mp4" type="video/mp4">
+</video>
 
 ## dependence
 * Install Ros
@@ -46,9 +51,11 @@ Coming soon
 
 1. Add environment variables to the system
     * ```export WORK_DIR=/your_path/pb_nbv/``
-2. Download test data and pt(nbv_net, scvp) file
-    * 
+2. Download test data and pt_scvp file
+    * [test_models](https://drive.google.com/file/d/12ev82uECxEyeaIMSbQDMPd90R04Wd4VR/view?usp=drive_link). Unzip the models.zip file and place "hb_models", "lm_models" and "stanford_models" in the ```${WORK_DIR}src/gazebo_benchmark_env/env_startup/models```.
+    * [scvp_pt](https://www.kaggle.com/datasets/sicongpan/scvp-dataset). Place the "last.pth.tar" in```${WORK_DIR}src/scvp_core/sc-net/pt```.
 3. Generate sdf file for gazebo
+    * Please make sure that "hb_models", "lm_models" and "stanford_models" are in the correct directory.
     * ```python3 src/gazebo_benchmark_env/env_startup/script/create_model_sdf.py```
 4. Run script
     * (mcmf) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_mcmf.py``` 
