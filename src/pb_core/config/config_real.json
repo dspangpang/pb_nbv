@@ -20,6 +20,7 @@
     "ray_trace_step" : 0.005,
 
     "__part__3": "nbv策略部分参数",
+    "is_random": false,
     "first_viewpoint_distance_factor": 1.1,
     "first_viewpoint_overlooking_angle": 50,
     "random_candidate_points_num": 400,

@@ -41,6 +41,7 @@ private:
     Eigen::MatrixXd candidate_longitude_angle_;
     Eigen::MatrixXd candidate_center_bias_;
     double partition_step_angle_size_;
+    bool is_random_; // 如果为真，候选视角随机产生!!!!
 
     // 数据保存路径
     bool save_nbv_tmp_data_;

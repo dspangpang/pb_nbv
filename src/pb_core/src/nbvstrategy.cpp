@@ -37,6 +37,8 @@ nbvstrategy::nbvstrategy(){
     candidate_longitude_angle_ = parseJsonEigenMatrix(config_file_path, "candidate_longitude_angle");
     candidate_center_bias_ = parseJsonEigenMatrix(config_file_path, "candidate_center_bias");
     partition_step_angle_size_ = parseJsonDouble(config_file_path, "partition_step_angle_size");
+    is_random_ = parseJsonBool(config_file_path, "is_random");
+
     // 计算分区的数量
     current_partition_state_.resize(ceil(360.0 / partition_step_angle_size_), 0);
 
@@ -71,6 +73,7 @@ int nbvstrategy::compute_next_view(
     const Eigen::Vector3d &bbx_unknown_max,
     Eigen::Matrix4d& nbv)
 {   
+
     if (nbv_cnt_ == 0){
         LOG (INFO) << "compute_init_view : ";
         if (fist_viewpoint_ues_position_){
@@ -109,6 +112,29 @@ int nbvstrategy::compute_next_view(
             longitude_step_lower_bound,
             center_bias
         );
+
+        if(is_random_){
+            // 获取当前时间作为种子
+            static unsigned seed = static_cast<unsigned>(std::time(0));
+            static std::default_random_engine generator(seed);
+
+            // 使用uniform_int_distribution生成伪随机数，范围是 0 到 views.size()-1
+            static std::uniform_int_distribution<int> distribution(0, views.size() - 1);
+
+            // 生成随机的视图索引
+            best_view_index = distribution(generator);
+
+            // 获取对应的视图
+            nbv = views[best_view_index];
+            
+            // 增加计数
+            nbv_cnt_++;
+
+            LOG(INFO) << "next_best_view_index: " << best_view_index;
+            LOG(INFO) << "next_best_view_res: " << views[best_view_index];
+
+            return 0;
+        }
 
         LOG (INFO) << "Compute cluster_projection : ";
 
@@ -191,7 +217,7 @@ int nbvstrategy::compute_next_view(
         
         nbv = views[best_view_index];
     }    
-    
+
     nbv_cnt_ ++;
 
     return 0;

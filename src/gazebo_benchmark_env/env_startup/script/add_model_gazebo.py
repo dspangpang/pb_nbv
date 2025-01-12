@@ -58,7 +58,7 @@ if __name__ == "__main__":
     model_ref_frame = sys.argv[3] if len(sys.argv) > 3 else "world"
     
     model_type = "stanford_models"
-    model_cnt = "1"
+    model_cnt = "6"
     model_file_path =f"{work_dir}src/gazebo_benchmark_env/env_startup/models/{model_type}/sdf/obj_00000{model_cnt}.sdf"
 
     # 解析模型姿态

@@ -11,7 +11,7 @@ from geometry_msgs.msg import Pose
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2
 from utils_msgs.srv import NBVTrigger, NBVTriggerRequest
-
+import re
 from add_model_gazebo import spawn_model, delete_model
 from add_realsense_gazebo import spawn_realsense
 from set_link_state import set_model_state
@@ -19,10 +19,9 @@ from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, 
 
 # 从环境变量中获取工作目录
 work_dir = os.environ['WORK_DIR']
-
 model_dir = ["hb_models", "lm_models", "stanford_models"]
-# model_dir = ["hb_models"]
-method_type = ["pb-4-10-0.9,0,0"]
+# model_dir = ["stanford_models"]
+method_type = ["pb-1-0-0.9,0,0"]
 pb_config_file = f"{work_dir}src/pb_core/config/config.json"
 
 if __name__ == '__main__':
@@ -96,14 +95,29 @@ if __name__ == '__main__':
             init_array = np.array([float(init_x), float(init_y), float(init_z)])
 
             # 修改 json 配置文件
+            # 打开并读取 JSON 文件
             with open(pb_config_file, "r", encoding="utf-8") as f:
                 config = json.load(f)
                 config["partition_step_angle_size"] = 360.0 / int(gp)
                 config["max_gmm_cluster_num"] = int(t_max)
+                if int(t_max) == 0:
+                    config["is_random"] = True
+                else:
+                    config["is_random"] = False
                 config["first_viewpoint_position"] = [init_array.tolist()]
 
+            # 将 Python 对象转换为 JSON 字符串，缩进、中文、分隔符处理
+            json_str = json.dumps(config, indent=4, ensure_ascii=False, separators=(',', ': '))
+
+            # 将多行矩阵压缩成单行，可根据需求修改正则逻辑
+            json_str = re.sub(
+                r'\[\n\s+([^]]+)\n\s+\]',
+                lambda m: f"[{','.join(line.strip() for line in m.group(1).split(','))}]",
+                json_str
+            )
+            # 写入回 JSON 文件
             with open(pb_config_file, "w", encoding="utf-8") as f:
-                json.dump(config, f)
+                f.write(json_str)
 
             # 创建文件夹
             folder_name = res_data + model_type + "_" + method
@@ -148,6 +162,8 @@ if __name__ == '__main__':
                     rospy.loginfo("Model spawned successfully: %s" % message)
                 else:
                     rospy.logerr("Failed to spawn model: %s" % message)
+
+                time.sleep(5)
 
                 # 设置 realsense 的初始位置
                 position = [-1.0, 0.0, 0.0]

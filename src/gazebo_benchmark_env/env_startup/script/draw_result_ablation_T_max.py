@@ -88,9 +88,9 @@ def draw_compare_converga_frame(groups, path):
     # 绘制4个折线图
     fig, ax1 = plt.subplots()
     # 添加网格
-    ax1.grid(False)
+    ax1.grid(True)
     # 设置y轴范围
-    ax1.set_ylim(0, 100)
+    ax1.set_ylim(92, 99)
     ax1.set_xlabel('Iteration')
     ax1.set_xticks(np.arange(len(coverage_group[0])))
     ax1.set_xticklabels(np.arange(1, len(coverage_group[0])+1))
@@ -98,10 +98,14 @@ def draw_compare_converga_frame(groups, path):
         # 提取 group 中的数据
         name = groups[i].split('-')[2]
         coverage = np.array(coverage_group[i]) * 100.0  # 确保 coverage 是一个 NumPy 数组
-        label = f"T_max = {name}"
         if name == "10":
+            label = f"Tmax: {name}"
             ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color='red')
+        elif name == "0":
+            label = "Random"
+            ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2)
         else:
+            label = f"Tmax: {name}"
             ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2)
 
     ax1.set_ylabel('Coverage (%)', color='black')
@@ -148,10 +152,14 @@ def draw_compare_time_frame(groups, path):
     for i in range(len(groups)):
         time = np.array(time_group[i])
         name = groups[i].split('-')[2]
-        label = f"T_max = {name}"
         if name == "10":
+            label = f"T_max = {name}"
             ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2, color='red')
+        elif name == "0":
+            label = "Random"
+            ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2)
         else:
+            label = f"T_max = {name}"
             ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2)
 
     ax1.set_ylabel('Time (s)', color='black')
@@ -373,8 +381,8 @@ if __name__ == '__main__':
     #     print("Input group: ", input_group)
     #     process_data(data_dir, input_group)
 
-    groups = ["pb-1-5-0.9,0,0", "pb-1-10-0.9,0,0", "pb-1-20-0.9,0,0", "pb-1-40-0.9,0,0"]
-
+    groups = ["pb-1-0-0.9,0,0", "pb-1-5-0.9,0,0", "pb-1-10-0.9,0,0", "pb-1-20-0.9,0,0", "pb-1-40-0.9,0,0"]
+    # process_data(data_dir, groups[0])
     draw_compare_converga_frame(groups, data_dir)
     draw_compare_time_frame(groups, data_dir)
 

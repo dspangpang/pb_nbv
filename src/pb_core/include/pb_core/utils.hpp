@@ -10,6 +10,8 @@
 #include <pcl/common/common.h>
 
 #include <filesystem>
+#include <random>
+#include <ctime> // 用于获取系统时间
 
 #include "jsonparser.hpp"
 #include <chrono>

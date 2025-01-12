@@ -10,7 +10,7 @@ import sys
 # 从环境变量中获取工作目录
 work_dir = os.environ['WORK_DIR']
 
-data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/video"
+data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data"
 model_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/models"
 
 print("Data dir: ", data_dir)
@@ -35,6 +35,9 @@ def draw_frame(time, coverage, model_name, path):
     ax1.plot(range(len(coverage)), coverage ,marker='s', linestyle = '-.', lw=2, label='Coverage')
     ax1.set_ylabel('Coverage(%)', color='black')
     ax1.tick_params(axis='y', labelcolor='black')
+
+    ax1.set_xticks(np.arange(len(coverage)))
+    ax1.set_xticklabels(np.arange(1, len(coverage)+1))
 
     # 创建第二个 y 轴
     ax2 = ax1.twinx()
