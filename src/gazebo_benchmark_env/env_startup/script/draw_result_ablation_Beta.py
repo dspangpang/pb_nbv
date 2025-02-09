@@ -90,7 +90,7 @@ def draw_compare_converga_frame(groups, path):
     # 添加网格
     ax1.grid(False)
     # 设置y轴范围
-    ax1.set_ylim(0, 100)
+    ax1.set_ylim(0, 110)
     ax1.set_xlabel('Iteration')
     ax1.set_xticks(np.arange(len(coverage_group[0])))
     ax1.set_xticklabels(np.arange(1, len(coverage_group[0])+1))
@@ -108,8 +108,7 @@ def draw_compare_converga_frame(groups, path):
     ax1.tick_params(axis='y', labelcolor='black')
     
     # 添加图例
-    fig.legend(loc='upper left', bbox_to_anchor=(0.12, 0.88))
-
+    fig.legend(loc='upper left', bbox_to_anchor=(0.22, 0.4))
     # 保存图片
     plt.savefig(os.path.join(path, "figuredata", "compare_coverage.svg"))
     plt.close(fig)  # 关闭图形

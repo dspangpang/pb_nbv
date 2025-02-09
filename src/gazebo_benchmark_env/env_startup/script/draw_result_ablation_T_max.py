@@ -30,7 +30,7 @@ def draw_frame(time, coverage, model_name, path):
     
     fig, ax1 = plt.subplots()
     # 添加网格
-    ax1.grid(True)
+    ax1.grid(False)
     # 设置y轴范围
     ax1.set_ylim(0, 1)
     ax1.plot(range(len(coverage)), coverage ,marker='s', linestyle = '-.', lw=2, label='Coverage')
@@ -88,9 +88,9 @@ def draw_compare_converga_frame(groups, path):
     # 绘制4个折线图
     fig, ax1 = plt.subplots()
     # 添加网格
-    ax1.grid(True)
+    ax1.grid(False)
     # 设置y轴范围
-    ax1.set_ylim(92, 99)
+    ax1.set_ylim(0, 110)
     ax1.set_xlabel('Iteration')
     ax1.set_xticks(np.arange(len(coverage_group[0])))
     ax1.set_xticklabels(np.arange(1, len(coverage_group[0])+1))
@@ -99,20 +99,20 @@ def draw_compare_converga_frame(groups, path):
         name = groups[i].split('-')[2]
         coverage = np.array(coverage_group[i]) * 100.0  # 确保 coverage 是一个 NumPy 数组
         if name == "10":
-            label = f"Tmax: {name}"
+            label = f"Tmax = {name}"
             ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color='red')
         elif name == "0":
             label = "Random"
             ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2)
         else:
-            label = f"Tmax: {name}"
+            label = f"Tmax = {name}"
             ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2)
 
     ax1.set_ylabel('Coverage (%)', color='black')
     ax1.tick_params(axis='y', labelcolor='black')
     
     # 添加图例
-    fig.legend(loc='upper left', bbox_to_anchor=(0.12, 0.88))
+    fig.legend(loc='upper left', bbox_to_anchor=(0.22, 0.4))
 
     # 保存图片
     plt.savefig(os.path.join(path, "figuredata", "compare_coverage.svg"))
@@ -153,13 +153,13 @@ def draw_compare_time_frame(groups, path):
         time = np.array(time_group[i])
         name = groups[i].split('-')[2]
         if name == "10":
-            label = f"T_max = {name}"
+            label = f"Tmax = {name}"
             ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2, color='red')
         elif name == "0":
             label = "Random"
             ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2)
         else:
-            label = f"T_max = {name}"
+            label = f"Tmax = {name}"
             ax1.plot(time, label=label, marker='s', linestyle='dotted', lw=2)
 
     ax1.set_ylabel('Time (s)', color='black')
