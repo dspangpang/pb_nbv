@@ -10,7 +10,7 @@ import sys
 # 从环境变量中获取工作目录
 work_dir = os.environ['WORK_DIR']
 
-data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/comparison/"
+data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/comparison_without_base"
 model_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/models"
 
 print("Data dir: ", data_dir)
@@ -131,16 +131,7 @@ def draw_compare_time_frame(groups, path):
     for group in groups:
         with open(os.path.join(path, "figuredata", f"{group}_time_average.txt"), 'r') as f:
             lines = f.readlines()
-            coverage = []
-            for line_number, line in enumerate(lines, start=1):
-                try:
-                    # 尝试将字符串转换为浮点数
-                    coverage.append(float(line.strip()))
-                except ValueError:
-                    # 捕获转换错误并打印详细信息
-                    print(f"Error: Could not convert line {line_number} in file {group}_time_average.txt to float.")
-                    print(f"Line content: {line.strip()}")
-                    continue
+            coverage = [float(line) for line in lines]
             time_group.append(coverage)
     
     plt.rcParams.update({'font.size': 11})
@@ -245,7 +236,7 @@ def process_data(path, group):
             print("Processing obj folder: ", obj_folder)
             model_name = obj_folder
             full_model_name = model_type + '_' + model_name
-            model_path = os.path.join(model_dir, model_type, "pcd", f"{model_name}.pcd")
+            model_path = os.path.join(model_dir, model_type, "pcd_without_base", f"{model_name}.pcd")
 
             # 用于计算点云覆盖率
             ground_truth = o3d.io.read_point_cloud(model_path)
@@ -291,7 +282,7 @@ def process_data(path, group):
                     [k, idx, dis] = current_data_tree.search_knn_vector_3d(ground_truth.points[j], 1)
                     if math.sqrt(dis[0]) < distance_threshold:
                         result += 1
-
+                        
                 coverage = result / len(ground_truth.points)
                 coverage_iter_average[i] += coverage
                 coverage_current[i] = coverage

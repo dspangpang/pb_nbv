@@ -21,7 +21,7 @@ from utils import quaternion_to_matrix, save_point_cloud, matrix_to_quaternion, 
 work_dir = os.environ['WORK_DIR']
 model_dir = ["hb_models", "lm_models", "stanford_models"]
 # model_dir = ["stanford_models"]
-method_type = ["pb-1-0-0.9,0,0"]
+method_type = ["pb-4-10-0.9,0,0"]
 pb_config_file = f"{work_dir}src/pb_core/config/config.json"
 
 if __name__ == '__main__':

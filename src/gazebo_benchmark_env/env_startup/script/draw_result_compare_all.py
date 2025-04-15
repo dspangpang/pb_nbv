@@ -10,7 +10,7 @@ import sys
 # 从环境变量中获取工作目录
 work_dir = os.environ['WORK_DIR']
 
-data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/comparison/"
+data_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/res_data/comparison_all"
 model_dir = f"{work_dir}src/gazebo_benchmark_env/env_startup/models"
 
 print("Data dir: ", data_dir)
@@ -87,7 +87,7 @@ def draw_compare_converga_frame(groups, path):
     # 绘制4个折线图
     fig, ax1 = plt.subplots()
     # 添加网格
-    ax1.grid(True)
+    ax1.grid(False)
     # 设置y轴范围
     ax1.set_ylim(0, 110)
     ax1.set_xlabel('Iteration')
@@ -101,19 +101,25 @@ def draw_compare_converga_frame(groups, path):
             continue
         if groups[i] == 'scvp':
             label = 'SCVP'
-            line_a_2 = ax1.plot(coverage, label=label, marker='o', linestyle='-.', lw=2)
+            line_a_2 = ax1.plot(coverage, label=label, marker='o', linestyle='-.', lw=2, color='blue')
             continue
         if groups[i] == 'nbvnet':
             label = 'NBVNET'
-            line_a_3 = ax1.plot(coverage, label=label, marker='^', linestyle='dotted', lw=2)
+            line_a_3 = ax1.plot(coverage, label=label, marker='^', linestyle='dotted', lw=2, color='green')
             continue
         if groups[i] == 'see':
             label = 'SEE'
-            line_a_4 = ax1.plot(coverage, label=label, marker='x', linestyle='dotted', lw=2)
+            line_a_4 = ax1.plot(coverage, label=label, marker='x', linestyle='dotted', lw=2, color='purple')
             continue
         else:
-            label = "Ours"
-            line_a_5 = ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color="red")
+            if groups[i] == 'pb-4-10-0.9,0,0':
+                label = "Ours-F"
+                line_a_5 = ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color="red")
+                continue
+            if groups[i] == 'pbh-4-10-0.9,0,0':
+                label = "Ours-H"
+                line_a_6 = ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color='orange')
+                continue
 
     ax1.set_ylabel('Coverage (%)', color='black')
     ax1.tick_params(axis='y', labelcolor='black')
@@ -173,19 +179,25 @@ def draw_compare_time_frame(groups, path):
             continue
         if groups[i] == 'scvp':
             label = 'SCVP'
-            line_a_2 = ax1.plot(coverage, label=label, marker='o', linestyle='-.', lw=2)
+            line_a_2 = ax1.plot(coverage, label=label, marker='o', linestyle='-.', lw=2, color='blue')
             continue
         if groups[i] == 'nbvnet':
             label = 'NBVNET'
-            line_a_3 = ax1.plot(coverage, label=label, marker='^', linestyle='dotted', lw=2)
+            line_a_3 = ax1.plot(coverage, label=label, marker='^', linestyle='dotted', lw=2, color='green')
             continue
         if groups[i] == 'see':
             label = 'SEE'
-            line_a_4 = ax1.plot(coverage, label=label, marker='x', linestyle='dotted', lw=2)
+            line_a_4 = ax1.plot(coverage, label=label, marker='x', linestyle='dotted', lw=2, color='purple')
             continue
         else:
-            label = "Ours"
-            line_a_5 = ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color="red")
+            if groups[i] == "pb-4-10-0.9,0,0":
+                label = "Ours-F"
+                line_a_5 = ax1.plot(coverage, label=label, marker='s', linestyle='dotted', lw=2, color="red")
+                continue
+            if  groups[i] == "pbh-4-10-0.9,0,0":
+                label = "Ours-H"
+                line_a_6 = ax1.plot(coverage, label=label, marker='s', linestyle='-.', lw=2, color='orange')
+                continue
 
     ax1.set_ylabel('Time (s)', color='black')
     ax1.tick_params(axis='y', labelcolor='black')
