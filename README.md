@@ -50,7 +50,7 @@ Coming soon
 1. Add environment variables to the system
     * ```export WORK_DIR=/your_path/pb_nbv/```
 2. Download test data and pt_scvp file
-    * [test_models](https://drive.google.com/file/d/12ev82uECxEyeaIMSbQDMPd90R04Wd4VR/view?usp=drive_link). Unzip the models.zip file and place "hb_models", "lm_models" and "stanford_models" in the ```${WORK_DIR}src/gazebo_benchmark_env/env_startup/models```.
+    * [test_models](https://drive.google.com/file/d/13ONPYOZF8OtlPb_rSPsaWB6ADnbw4icx/view?usp=sharing). Unzip the models.zip file and place "hb_models", "lm_models" and "stanford_models" in the ```${WORK_DIR}src/gazebo_benchmark_env/env_startup/models```.
     * [scvp_pt](https://www.kaggle.com/datasets/sicongpan/scvp-dataset). Place the "last.pth.tar" in```${WORK_DIR}src/scvp_core/sc-net/pt```.
 3. Generate sdf file for gazebo
     * Please make sure that "hb_models", "lm_models" and "stanford_models" are in the correct directory.
