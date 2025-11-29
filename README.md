@@ -63,5 +63,18 @@ Coming soon
     * (pb) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_pb.py```
     * (scvp) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_scvp.py```
     * (see) ``` python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_see.py```
+  
+## 📚 BibTeX
+If you use this repository for your research, please cite our RA-L paper:
+
+```bibtex
+@article{jia2025pb,
+  title={PB-NBV: Efficient Projection-Based Next-Best-View Planning Framework for Reconstruction of Unknown Objects},
+  author={Jia, Zhizhou and Li, Yuetao and Hao, Qun and Zhang, Shaohui},
+  journal={IEEE Robotics and Automation Letters},
+  year={2025},
+  publisher={IEEE}
+}
+```
 
     
