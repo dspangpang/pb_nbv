@@ -454,7 +454,7 @@ public:
 		delete voxel_information;
 		delete now_view_space;
 		//只有搜索生成了information
-		if (share_data->method_of_IG == 6 || share_data->method_of_IG == 7);
+		if (share_data->method_of_IG == 6 || share_data->method_of_IG == 7 || share_data->method_of_IG == 8);
 		else delete now_views_infromation;
 	}
 
@@ -717,15 +717,20 @@ public:
 					ofstream fout_move(share_data->save_path + "/movement/path" + to_string(iterations) + ".txt");
 					fout_move << now_best_view->id << '\t' << now_best_view->robot_cost << '\t' << share_data->movement_cost << endl;
 				}
-				else if (share_data->method_of_IG == 7) { //SCVP
+				else if (share_data->method_of_IG == 7 || share_data->method_of_IG == 8) { //SCVP / MA-SCVP
+					std::string net_path = share_data->sc_net_path;
+					if (share_data->method_of_IG == 8) {
+						net_path = share_data->ma_scvp_path;
+					}
 					if (iterations == 0) {
-						share_data->access_directory(share_data->sc_net_path + "/log");
+						share_data->access_directory(net_path + "/log");
 						ifstream ftest;
 						do {
-							ftest.open(share_data->sc_net_path + "/log/ready.txt");
+							ftest.open(net_path + "/log/ready.txt");
 						} while (!ftest.is_open());
 						ftest.close();
-						share_data->access_directory(share_data->sc_net_path + "/log/" + share_data->name_of_pcd);
+						share_data->access_directory(net_path + "/log/" + share_data->name_of_pcd);
+						std::string file_path;
 #ifdef ROS
 						size_t pos = share_data->name_of_pcd.find_last_of('/');
 						std::string file_name;
@@ -734,15 +739,19 @@ public:
 						} else {
 							std::cerr << "No '/' found in the string" << std::endl;
 						}
-						std::string file_path = share_data->sc_net_path + "/log/" + share_data->name_of_pcd + "/" + file_name + ".txt";
+						if (share_data->method_of_IG == 7) {
+							file_path = net_path + "/log/" + share_data->name_of_pcd + "/" + file_name + ".txt";
+						}
+						else {
+							file_path = net_path + "/log/" + share_data->name_of_pcd + ".txt";
+						}
+#else
+						file_path = net_path + "/log/" + share_data->name_of_pcd + ".txt";
+#endif
 						ifstream fin(file_path);
-						// 判断是否打开了文件
 						if (!fin.is_open()) {
 							cout << "cannot open file." << endl;
 						}
-#else
-						ifstream fin(share_data->sc_net_path + "/log/" + share_data->name_of_pcd + ".txt");
-#endif
 						vector<int> view_set_label;
 						int rest_view_id;
 						while (fin >> rest_view_id) {
@@ -762,7 +771,7 @@ public:
 						fout_move << now_best_view->id << '\t' << now_best_view->robot_cost << '\t' << share_data->movement_cost << endl;
 						//更新标志文件
 						this_thread::sleep_for(chrono::seconds(5));
-						int removed = remove((share_data->sc_net_path + "/log/ready.txt").c_str());
+						int removed = remove((net_path + "/log/ready.txt").c_str());
 						if (removed != 0) cout << "cannot remove ready.txt." << endl;
 					}
 					else {
@@ -985,12 +994,21 @@ void create_views_information(Views_Information** now_views_infromation, View* n
 				}
 		if (num_of_square_voxels != 32 * 32 * 32) cout << "what? no square." << endl;
 	}
-	else if (share_data->method_of_IG == 7) { //SCVP
+	else if (share_data->method_of_IG == 7 || share_data->method_of_IG == 8) { //SCVP / MA-SCVP
 		if (iterations == 0) {
+			std::string net_path = share_data->sc_net_path;
+			if (share_data->method_of_IG == 8) {
+				net_path = share_data->ma_scvp_path;
+			}
 			//octotree
-			share_data->access_directory(share_data->sc_net_path + "/data");
-			share_data->access_directory(share_data->sc_net_path + "/data/" + share_data->name_of_pcd);
-			ofstream fout(share_data->sc_net_path + "/data/" + share_data->name_of_pcd + ".txt");
+			share_data->access_directory(net_path + "/data");
+			share_data->access_directory(net_path + "/data/" + share_data->name_of_pcd);
+			std::string voxel_file = net_path + "/data/" + share_data->name_of_pcd;
+			if (share_data->method_of_IG == 8) {
+				voxel_file += "_voxel";
+			}
+			voxel_file += ".txt";
+			ofstream fout(voxel_file);
 			int num_of_square_voxels = 0;
 			for (double x = now_view_space->object_center_world(0) - now_view_space->predicted_size; x <= now_view_space->object_center_world(0) + now_view_space->predicted_size; x += share_data->octomap_resolution)
 				for (double y = now_view_space->object_center_world(1) - now_view_space->predicted_size; y <= now_view_space->object_center_world(1) + now_view_space->predicted_size; y += share_data->octomap_resolution)
@@ -1002,6 +1020,16 @@ void create_views_information(Views_Information** now_views_infromation, View* n
 						num_of_square_voxels++;
 					}
 			if (num_of_square_voxels != 32 * 32 * 32) cout << "what? no square." << endl;
+			if (share_data->method_of_IG == 8) {
+				std::string vs_file = net_path + "/data/" + share_data->name_of_pcd + "_vs.txt";
+				ofstream vs_out(vs_file);
+				for (int i = 0; i < share_data->num_of_views; i++) {
+					int flag = (i == now_best_view->id) ? 1 : 0;
+					vs_out << flag;
+					if (i != share_data->num_of_views - 1) vs_out << ' ';
+				}
+				vs_out << std::endl;
+			}
 		}
 	}
 	else { //搜索方法

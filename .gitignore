@@ -24,4 +24,11 @@ src/scvp_core/sc-net/log/*
 !src/scvp_core/sc-net/log/.gitkeep
 src/scvp_core/nbv-net/log/*
 !src/scvp_core/nbv-net/log/.gitkeep
+src/scvp_core/ma_scvp/data/**
+!src/scvp_core/ma_scvp/data/.gitkeep
+src/scvp_core/ma_scvp/pth/**
+!src/scvp_core/ma_scvp/pth/README.md
+src/scvp_core/ma_scvp/log/*
+!src/scvp_core/ma_scvp/log/.gitkeep
+src/scvp_core/ma_scvp/run_time/**
 *.pyc

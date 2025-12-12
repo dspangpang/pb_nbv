@@ -184,6 +184,7 @@ static void rs2_deproject_pixel_to_point(float point[3], const struct rs2_intrin
 #define Kr 5
 #define NBVNET 6
 #define SCVP 7
+#define MA_SCVP 8
 
 class Share_Data
 {
@@ -194,6 +195,8 @@ public:
 	string name_of_pcd;
 	string nbv_net_path;
 	string sc_net_path;
+	string ma_scvp_path;
+	string ma_scvp_checkpoint;
 
 	int num_of_views;					//一次采样视点个数
 	double cost_weight;
@@ -285,6 +288,8 @@ public:
 		fs["move_wait"] >> move_wait;
 		fs["nbv_net_path"] >> nbv_net_path;
 		fs["sc_net_path"] >> sc_net_path;
+		fs["ma_scvp_path"] >> ma_scvp_path;
+		fs["ma_scvp_checkpoint"] >> ma_scvp_checkpoint;
 		fs["p_unknown_upper_bound"] >> p_unknown_upper_bound;
 		fs["p_unknown_lower_bound"] >> p_unknown_lower_bound;
 		fs["num_of_views"] >> num_of_views;

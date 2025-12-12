@@ -2,8 +2,10 @@
 model_path: "/root/work_place/pb_nbv/src/gazebo_benchmark_env/env_startup/models/"
 nbv_net_path: "/root/work_place/pb_nbv/src/scvp_core/nbv-net"
 sc_net_path: "/root/work_place/pb_nbv/src/scvp_core/sc-net"
-name_of_pcd: hb_models/pcd/obj_000011
-method_of_IG: 0
+ma_scvp_path: "/root/work_place/pb_nbv/src/scvp_core/ma_scvp"
+ma_scvp_checkpoint: "/root/work_place/pb_nbv/src/scvp_core/ma_scvp/pth/longtail32_lambda2.0_bsize8_lr0.0004.pth.tar"
+name_of_pcd: hb_models/pcd/obj_000012
+method_of_IG: 8
 octomap_resolution: 0.03
 ground_truth_resolution: 0.01
 num_of_max_iteration: 10

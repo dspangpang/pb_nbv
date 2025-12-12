@@ -609,7 +609,7 @@ public:
 		views_key_set = new unordered_set<octomap::OcTreeKey, octomap::OcTreeKey::KeyHash>();
 		//检测viewspace是否已经生成
 		// sc-net nbv-net 使用固定的 32 个视角
-		if (share_data->method_of_IG == 7 || share_data->method_of_IG == 6) {
+		if (share_data->method_of_IG == 7 || share_data->method_of_IG == 6 || share_data->method_of_IG == 8) {
 			ifstream fin(share_data->sc_net_path  + "/view_space.txt");
 			if (fin.is_open()) { //存在文件就读视点集合
 				int num;
@@ -738,7 +738,7 @@ public:
 		viewer = share_data->viewer;
 		views_key_set = new unordered_set<octomap::OcTreeKey, octomap::OcTreeKey::KeyHash>();
 		//检测viewspace是否已经生成
-		if (share_data->method_of_IG == 7) {//sc-net
+		if (share_data->method_of_IG == 7 || share_data->method_of_IG == 8) {//sc-net / MA-SCVP
 			ifstream fin(share_data->sc_net_path  + "/view_space.txt");
 			if (fin.is_open()) { //存在文件就读视点集合
 				int num;
