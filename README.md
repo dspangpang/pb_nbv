@@ -1,23 +1,23 @@
-# Projection-Based NBV planing Framework
+# Projection-Based NBV planning Framework
 
 ## Overview
 * We propose a novel projection-based Next-Best-View (NBV) planning framework that aims to alleviate the high computational burden associated with existing algorithms due to the use of ray-casting in the process of selecting the best viewpoint.
 
 ## Experiment platform
- (a) Real-world platform
- (b) Similar to real-world platforms using a robotic arm, a turntable and a struct light 3D camera.
-Simulation platform 
- (c) Simple environment just using a realsense.
+ 
 <figure class="half">
+    (a) Real-world platform
     <img src="./imgs/Experimental_platform.png" width=640 height=480>
+    (b) Simulation platform (Similar to real-world platforms using a robotic arm, a turntable and a struct light 3D camera.)
     <img src="./imgs/Simulation_environment.png" width=640 height=480>
+    (c) Simple environment just using a RealSense
     <img src="./imgs/Simulation_Comparison_platform.png" width=640 height=480>
 </figure>
 
 ## Experiment Result
 [[video](https://drive.google.com/file/d/1MVV0GWDs3sKKpubXCGLHRS9OCDj2HrcY/view?usp=drive_link)]
 
-## dependence
+## Dependencies
 * Install Ros
     * http://wiki.ros.org/noetic/Installation/Ubuntu (use full desktop install, include opencv, pcl)
 * Install Dependencies
@@ -27,13 +27,13 @@ Simulation platform
     * pb_nbv/3rdparty/lemon-1.3.1
     * pb_nbv/3rdparty/gflag-2.2.2 (-DBUILD_SHARED_LIBS="on")
     * pb_nbv/3rdparty/gflag-0.6.0 
-    * pb_nbv/3rdparty/CSerialPort-4.3.1 (for real world experiment)
+    * pb_nbv/3rdparty/CSerialPort-4.3.1 (for real-world experiment)
 * Python Dependencies
     * ```pip install networkx==3.1```
     * ```pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118```
     * ```pip install open3d trimehs pycollada```
 * Tips
-    * When running mcmf in Linux environment and the system prompts that there are not enough threads, use ```sysctl -w vm.max_map_count=11262144```
+    * When running mcmf in a Linux environment and the system prompts that there are not enough threads, use ```sysctl -w vm.max_map_count=11262144```
 
 ## How to use
 
@@ -45,17 +45,17 @@ Coming soon
 
 Coming soon
 
-### Simulation Comparison platform 
+### Simulation Comparison Platform 
 
 1. Add environment variables to the system
     * ```export WORK_DIR=/your_path/pb_nbv/```
 2. Download test data and pt_scvp file
     * [test_models](https://drive.google.com/file/d/13ONPYOZF8OtlPb_rSPsaWB6ADnbw4icx/view?usp=sharing). Unzip the models.zip file and place "hb_models", "lm_models" and "stanford_models" in the ```${WORK_DIR}src/gazebo_benchmark_env/env_startup/models```.
     * [scvp_pt](https://www.kaggle.com/datasets/sicongpan/scvp-dataset). Place the "last.pth.tar" in```${WORK_DIR}src/scvp_core/sc-net/pt```.
-3. Generate sdf file for gazebo
+3. Generate the sdf file for Gazebo
     * Please make sure that "hb_models", "lm_models" and "stanford_models" are in the correct directory.
     * ```python3 src/gazebo_benchmark_env/env_startup/script/create_model_sdf.py```
-4. Compile ros workspace
+4. Compile the ROS workspace
     * ```cd ${WORK_DIR} && catkin_make```
 5. Run script
     * (mcmf) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_mcmf.py``` 
@@ -63,5 +63,18 @@ Coming soon
     * (pb) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_pb.py```
     * (scvp) ```python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_scvp.py```
     * (see) ``` python3 src/gazebo_benchmark_env/env_startup/script/start_benchmark_see.py```
+  
+## 📚 BibTeX
+If you use this repository for your research, please cite our RA-L paper:
+
+```bibtex
+@article{jia2025pb,
+  title={PB-NBV: Efficient Projection-Based Next-Best-View Planning Framework for Reconstruction of Unknown Objects},
+  author={Jia, Zhizhou and Li, Yuetao and Hao, Qun and Zhang, Shaohui},
+  journal={IEEE Robotics and Automation Letters},
+  year={2025},
+  publisher={IEEE}
+}
+```
 
     
