@@ -258,6 +258,10 @@ public:
 		//定义指向物体为Z+，从上一个相机位置发出射线至当前为X+，计算两个相机坐标系之间的变换矩阵，object与view为上一个相机坐标系下的坐标
 		Eigen::Vector3d object(object_center_now_camera(0), object_center_now_camera(1), object_center_now_camera(2));
 		Eigen::Vector3d view(view_now_camera(0), view_now_camera(1), view_now_camera(2));
+		if (view.norm() < 1e-4) {
+			pose = Eigen::Matrix4d::Identity();
+			return;
+		}
 		Eigen::Vector3d Z;	 Z = object - view;	 Z = Z.normalized();
 		//注意左右手系，不要弄反了
 		Eigen::Vector3d X;	 X = Z.cross(view);	 X = X.normalized();

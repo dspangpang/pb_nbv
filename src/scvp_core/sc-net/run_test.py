@@ -26,7 +26,7 @@ os.system('rm -rf '+log_cache_path+"*")
 print('testing ' + model)
 while not os.path.isfile(os.path.join(data_cache_path, model + '.txt')):
     pass
-os.system(f'python3 {work_dir}src/scvp_core/sc-net/eval_single_file.py ' + model)
+os.system(f'python3 {work_dir}src/scvp_core/sc-net/eval_single_file.py ' + model + ' ' + str(max_iteration))
 with open(log_cache_path + '/ready.txt', 'a') as f:
     f.close()
 print('testing ' + model + ' over.')

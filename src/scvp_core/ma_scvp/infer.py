@@ -76,12 +76,24 @@ if __name__ == '__main__':
     if not ans:
         ans.append(0)
 
-    # 不足 10 帧时重复最后一帧补齐
-    while len(ans) < 10:
+    # 获取迭代次数
+    if len(sys.argv) <= 3:
+        raise ValueError("Missing iteration argument. Usage: python infer.py <pth_path> <model_name> <iteration>")
+    iteration = int(sys.argv[3])
+
+    # 不足 iteration 帧时重复最后一帧补齐
+    while len(ans) < iteration:
         ans.append(ans[-1])
 
     # 剔除编号 0 的视角，但至少保留 1 个元素
     while 0 in ans and len(ans) > 1:
         ans.remove(0)
 
-    np.savetxt('./log/'+name_of_model+'.txt',ans,fmt='%d')
+    # 保存结果
+    log_cache_path = './log/'
+    model_name = name_of_model.split('/')[-1]
+    save_dir = os.path.join(log_cache_path, name_of_model)
+    os.makedirs(save_dir, exist_ok=True)
+    
+    np.savetxt(os.path.join(save_dir, model_name + '.txt'), ans, fmt='%d')
+    np.savetxt(os.path.join(save_dir, model_name + '_iter.txt'), np.asarray([iteration]))

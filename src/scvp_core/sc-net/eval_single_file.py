@@ -27,12 +27,13 @@ device = torch.device('cpu')
 
 log_cache_path = f'{work_dir}src/scvp_core/sc-net/log/'
 data_cache_path = f'{work_dir}src/scvp_core/sc-net/data/'
+
 # 创建文件夹
 os.makedirs(log_cache_path, exist_ok=True)
 os.makedirs(data_cache_path, exist_ok=True)
 
 name_of_model = str(sys.argv[1])
-
+iteration = int(sys.argv[2])
 
 def eval(datapath):
 
@@ -43,7 +44,7 @@ def eval(datapath):
     # 确保数据大小为 32768
     target_size = 32768
     target_shape = (32, 32, 32)
-    if test_data.size > target_size:
+    if test_data.size != target_size:
         # 假设原始数据是立方体的
         original_size = int(round(test_data.size ** (1/3)))
         test_data = test_data.reshape((original_size, original_size, original_size))
@@ -94,11 +95,6 @@ if __name__ == '__main__':
         if pred[0][i] == 1:
             ans.append(i)
 
-
-    # 如果 ans 的长度为 小于10 则用最后一个数填充
-    while len(ans) < 10:
-        ans.append(ans[-1])
-
     # 如果 ans 中存在0 则删除
     while 0 in ans:
         ans.remove(0)
@@ -108,3 +104,4 @@ if __name__ == '__main__':
     # 如果文件夹不存在则创建
     os.makedirs(log_cache_path + name_of_model, exist_ok=True)
     np.savetxt(log_cache_path + name_of_model + "/" + model_name +'.txt',ans,fmt='%d')
+    np.savetxt(log_cache_path + name_of_model + "/" + model_name +'_iter.txt',np.asarray([iteration]))

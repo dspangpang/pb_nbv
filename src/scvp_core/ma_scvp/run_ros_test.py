@@ -22,16 +22,19 @@ if __name__ == "__main__":
 
     model = sys.argv[1]
     checkpoint_path = sys.argv[2]
+    iteration = "30"
+    if len(sys.argv) > 3:
+        iteration = sys.argv[3]
 
     voxel_file = os.path.join(data_cache_path, f"{model}_voxel.txt")
     view_state_file = os.path.join(data_cache_path, f"{model}_vs.txt")
     ready_flag = os.path.join(log_cache_path, "ready.txt")
-    target_log_file = os.path.join(log_cache_path, f"{model}.txt")
+    # target_log_file = os.path.join(log_cache_path, f"{model}.txt") # No longer used directly here as infer.py handles it
 
     # 清理旧文件，避免读取到上一轮结果
     shutil.rmtree(os.path.join(log_cache_path, model), ignore_errors=True)
-    if os.path.exists(target_log_file):
-        os.remove(target_log_file)
+    # if os.path.exists(target_log_file):
+    #     os.remove(target_log_file)
     if os.path.exists(ready_flag):
         os.remove(ready_flag)
     for stale_file in (voxel_file, view_state_file):
@@ -42,7 +45,7 @@ if __name__ == "__main__":
     while not (os.path.isfile(voxel_file) and os.path.isfile(view_state_file)):
         time.sleep(0.1)
 
-    _ensure_parent(target_log_file)
+    # _ensure_parent(target_log_file)
 
     run_time_root = os.path.join(ma_root, "run_time")
     os.makedirs(run_time_root, exist_ok=True)
@@ -59,6 +62,7 @@ if __name__ == "__main__":
             os.path.join(ma_root, "infer.py"),
             checkpoint_path,
             model,
+            iteration,
         ],
         cwd=ma_root,
         check=True,

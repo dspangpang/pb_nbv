@@ -757,11 +757,65 @@ public:
 						while (fin >> rest_view_id) {
 							view_set_label.push_back(rest_view_id);
 						}
-						//规划路径
-						Global_Path_Planner* gloabl_path_planner = new Global_Path_Planner(share_data, now_view_space, now_best_view, view_set_label);
-						gloabl_path_planner->solve();
-						//保存路径
-						share_data->view_label_id = gloabl_path_planner->get_path_id_set();
+						if (share_data->method_of_IG == 8) {
+							share_data->view_label_id = view_set_label;
+						} else {
+							vector<int> tsp_view_set;
+							vector<int> remaining_view_set;
+							int max_tsp_nodes = 18; // 限制 TSP 规模防止内存溢出
+							for (int i = 0; i < view_set_label.size(); i++) {
+								if (i < max_tsp_nodes) {
+									tsp_view_set.push_back(view_set_label[i]);
+								} else {
+									remaining_view_set.push_back(view_set_label[i]);
+								}
+							}
+							if (view_set_label.size() > max_tsp_nodes) {
+								cout << "Warning: Too many views for TSP (" << view_set_label.size() << "). Truncating to " << max_tsp_nodes << "." << endl;
+							}
+
+							//规划路径
+							Global_Path_Planner* gloabl_path_planner = new Global_Path_Planner(share_data, now_view_space, now_best_view, tsp_view_set);
+							gloabl_path_planner->solve();
+							//保存路径
+							share_data->view_label_id = gloabl_path_planner->get_path_id_set();
+							
+							// 将剩余未参与 TSP 的视点追加到路径后
+							for (int id : remaining_view_set) {
+								share_data->view_label_id.push_back(id);
+							}
+						}
+
+#ifdef ROS
+						std::string iter_file_path = net_path + "/log/" + share_data->name_of_pcd + "/" + file_name + "_iter.txt";
+						ifstream fin_iter(iter_file_path);
+						double total_iter_double = 0;
+						int total_iter = 0;
+						if (fin_iter.is_open()) {
+							fin_iter >> total_iter_double;
+							total_iter = (int)total_iter_double;
+							fin_iter.close();
+						}
+						cout << "Debug: Read total_iter from " << iter_file_path << ": " << total_iter_double << " -> " << total_iter << endl;
+						
+						if (total_iter == 0) {
+							total_iter = view_set_label.size();
+							cout << "Debug: _iter.txt not found or empty. Using view_set_label.size(): " << total_iter << endl;
+						}
+
+						cout << "Debug: Initial view_label_id size: " << share_data->view_label_id.size() << endl;
+
+						// 把填充部分加回去
+						while (share_data->view_label_id.size() < total_iter) {
+							if (share_data->view_label_id.size() > 0) {
+								int last_view = share_data->view_label_id.back();
+								share_data->view_label_id.push_back(last_view);
+							}
+							else
+								share_data->view_label_id.push_back(0);
+						}
+						cout << "Debug: Final view_label_id size: " << share_data->view_label_id.size() << endl;
+#endif
 						delete now_best_view;
 						now_best_view = new View(now_view_space->views[share_data->view_label_id[iterations]]);
 						//运动代价：视点id，当前代价，总体代价
