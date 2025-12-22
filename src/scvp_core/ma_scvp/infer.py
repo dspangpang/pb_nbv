@@ -74,19 +74,15 @@ if __name__ == '__main__':
 
     # 若没有任何激活结果，默认补一个 0，避免后续访问 ans[-1] 报错
     if not ans:
-        ans.append(0)
+        raise ValueError("Get No result")
 
     # 获取迭代次数
     if len(sys.argv) <= 3:
         raise ValueError("Missing iteration argument. Usage: python infer.py <pth_path> <model_name> <iteration>")
     iteration = int(sys.argv[3])
 
-    # 不足 iteration 帧时重复最后一帧补齐
-    while len(ans) < iteration:
-        ans.append(ans[-1])
-
     # 剔除编号 0 的视角，但至少保留 1 个元素
-    while 0 in ans and len(ans) > 1:
+    while 0 in ans:
         ans.remove(0)
 
     # 保存结果

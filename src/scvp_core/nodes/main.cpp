@@ -739,7 +739,7 @@ public:
 						} else {
 							std::cerr << "No '/' found in the string" << std::endl;
 						}
-						if (share_data->method_of_IG == 7) {
+						if (share_data->method_of_IG == 7 || share_data->method_of_IG == 8) {
 							file_path = net_path + "/log/" + share_data->name_of_pcd + "/" + file_name + ".txt";
 						}
 						else {
@@ -757,9 +757,7 @@ public:
 						while (fin >> rest_view_id) {
 							view_set_label.push_back(rest_view_id);
 						}
-						if (share_data->method_of_IG == 8) {
-							share_data->view_label_id = view_set_label;
-						} else {
+						{
 							vector<int> tsp_view_set;
 							vector<int> remaining_view_set;
 							int max_tsp_nodes = 18; // 限制 TSP 规模防止内存溢出
