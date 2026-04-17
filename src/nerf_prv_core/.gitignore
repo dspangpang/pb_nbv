@@ -1,0 +1,10 @@
+best_checkpoint.pth.zip
+external/convnext_v2/.git
+external/convnext_v2.placeholder/
+external/prvnet/checkpoints/best_checkpoint.pth
+external/prvnet/imagenet/convnextv2_tiny_1k_224_ema.pt
+cache/*
+!cache/.gitkeep
+prvnet/__pycache__/
+prvnet/data/view_budget.txt
+prvnet/data/images/*.png

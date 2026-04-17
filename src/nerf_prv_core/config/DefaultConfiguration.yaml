@@ -1,0 +1,26 @@
+%YAML:1.0
+name_of_pcd: "GSO_models/pcd/obj_000006"
+viewspace_path: "/root/work_place/pb_nbv/src/nerf_prv_core/view_space/Hemisphere"
+cache_root: "/root/work_place/pb_nbv/src/nerf_prv_core/cache"
+prvnet_data_dir: "/root/work_place/pb_nbv/src/nerf_prv_core/prvnet/data"
+external_root: "/root/work_place/pb_nbv/src/nerf_prv_core/external"
+upstream_reference_root: "/root/work_place/pb_nbv/src/nerf_prv_core/upstream/PRV_simulation_reference"
+prvnet_checkpoint: "/root/work_place/pb_nbv/src/nerf_prv_core/external/prvnet/checkpoints/best_checkpoint.pth"
+prvnet_env_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/convnext_v2"
+prvnet_imagenet_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/prvnet/imagenet/convnextv2_tiny_1k_224_ema.pt"
+prvnet_dataset_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/prvnet/data_5view"
+shape_net_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/shapenet"
+instant_ngp_scripts_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/instant_ngp/scripts"
+origin_exports_path: "/root/work_place/pb_nbv/src/nerf_prv_core/external/origin_exports"
+use_prvnet_prediction: 1
+fallback_view_budget: 12
+initial_view_budget: 5
+max_wait_seconds: 30
+view_space_radius: 0.9
+object_radius: 0.2
+object_center_x: 0.0
+object_center_y: 0.0
+object_center_z: 0.0
+start_x: -1.0
+start_y: 0.0
+start_z: 0.0

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="nerf_prv_core"
+        type="nerf_prv_core_node"
+        name="nerf_prv_core_node"
+        output="screen">
+  </node>
+</launch>
